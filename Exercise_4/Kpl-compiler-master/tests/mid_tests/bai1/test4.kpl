@@ -1,0 +1,12 @@
+Program Example5; (* Example 1 *)
+const c = 1.1;
+      x = 'a';
+      y = "aaa";
+var a: double;
+    b: string;
+    d: char;
+begin
+    a := 1.1212;
+    d:= "a";
+    b:="aaa";
+End. (* Example 1 *)

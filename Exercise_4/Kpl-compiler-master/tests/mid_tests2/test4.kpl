@@ -1,0 +1,7 @@
+program e;
+const x = "hello";
+    t = -.678;
+    y = -2.;
+    z = +2.;
+begin
+end.

@@ -1,0 +1,6 @@
+Program Example6; (*do khong co while phai bao thieu while*)
+VAR x: integer;
+    y: integer;
+Begin
+    do x:=1;
+End.

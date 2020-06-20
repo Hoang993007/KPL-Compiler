@@ -1,0 +1,8 @@
+Program Example6; (*do while do while x = 1 do x := 2*)
+VAR x: integer;
+    y: integer;
+    b: integer;
+    a: integer;
+Begin
+    do while do while x = 1 do x = 2;
+End.

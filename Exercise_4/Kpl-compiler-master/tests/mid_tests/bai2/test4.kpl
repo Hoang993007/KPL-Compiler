@@ -1,0 +1,9 @@
+Program Example6; (*Ve trai lenh gan chua hang so*)
+CONST x = 10;
+VAR y: integer;
+    b: integer;
+    a: integer;
+
+Begin
+    x:=a;
+End.

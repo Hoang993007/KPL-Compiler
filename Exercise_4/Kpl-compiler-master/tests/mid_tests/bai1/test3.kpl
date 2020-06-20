@@ -1,0 +1,8 @@
+Program Example6; (*do while do while x = 1 do x := 2*)
+VAR x: double;
+    y: string;
+    b: integer;
+    a: integer;
+Begin
+    
+End.

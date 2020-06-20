@@ -1,0 +1,8 @@
+Program Example6; (*Sai kieu du lieu tuong ung o hai ve*)
+VAR x: char;
+    y: integer;
+    b: integer;
+    a: integer;
+Begin
+    x,y:=a,b;
+End.

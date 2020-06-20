@@ -1,0 +1,8 @@
+Program Example6; (*Ve phai nhieu bien hon ve trai*)
+VAR x: integer;
+    y: integer;
+    b: integer;
+    a: integer;
+Begin
+    x:=a,b;
+End.
