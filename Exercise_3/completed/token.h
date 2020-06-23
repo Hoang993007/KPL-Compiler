@@ -8,7 +8,9 @@
 #define __TOKEN_H__
 
 #define MAX_IDENT_LEN 15
+//EXERCISE 3-------------------------------------------
 #define KEYWORDS_COUNT 24
+//------------------------------------------------------	
 
 typedef enum {
   TK_NONE, TK_IDENT, TK_NUMBER, TK_CHAR, TK_EOF,

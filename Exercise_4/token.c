@@ -16,8 +16,14 @@ struct {
   {"CONST", KW_CONST},
   {"TYPE", KW_TYPE},
   {"VAR", KW_VAR},
+  
   {"INTEGER", KW_INTEGER},
   {"CHAR", KW_CHAR},
+    //EXERCISE 4 ----------------------------------------------
+  {"DOUBLE", KW_DOUBLE},
+  {"STRING", KW_STRING},
+  //-----------------------------------------------------------------
+  
   {"ARRAY", KW_ARRAY},
   {"OF", KW_OF},
   {"FUNCTION", KW_FUNCTION},
@@ -30,8 +36,8 @@ struct {
   {"ELSE", KW_ELSE},
   {"WHILE", KW_WHILE},
   {"DO", KW_DO},
-  {"FOR", KW_FOR},
-  {"TO", KW_TO}
+  {"FOR", KW_FOR}, 
+  {"TO", KW_TO},
 };
 
 int keywordEq(char *kw, char *string) {
@@ -62,8 +68,16 @@ char *tokenToString(TokenType tokenType) {
   switch (tokenType) {
   case TK_NONE: return "None";
   case TK_IDENT: return "an identification";
-  case TK_NUMBER: return "a number";
+    
+    //EXERCISE 4---------------------------------------
+    //case TK_NUMBER: return "a number";
+  case TK_INT: return "a integer";
+  case TK_DOUBLE: return "a double";
+  case TK_STRING: return "a string";
+      //---------------------------------------------------------
   case TK_CHAR: return "a constant char";
+  
+  
   case TK_EOF: return "end of file";
 
   case KW_PROGRAM: return "keyword PROGRAM";
@@ -86,6 +100,10 @@ char *tokenToString(TokenType tokenType) {
   case KW_DO: return "keyword DO";
   case KW_FOR: return "keyword FOR";
   case KW_TO: return "keyword TO";
+    //EXERCISE 4----------------------------------------------
+  case KW_STRING: return "keyword STRING";
+  case KW_DOUBLE: return "keyword DOUBLE";
+    //---------------------------------------------------------------
 
   case SB_SEMICOLON: return "\';\'";
   case SB_COLON: return "\':\'";

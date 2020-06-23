@@ -15,9 +15,12 @@ void freeScope(Scope* scope);
 void freeObjectList(ObjectNode *objList);
 void freeReferenceList(ObjectNode *objList);
 
+//EXERCISE 4 ----------------------------------------------
 SymTab* symtab;
 Type* intType;
+Type* doubleType;
 Type* charType;
+Type* stringType;
 
 /******************* Type utilities ******************************/
 
@@ -27,9 +30,23 @@ Type* makeIntType(void) {
   return type;
 }
 
+//EXERCISE 4 ----------------------------------------------
+Type* makeDoubleType(void) {
+  Type* type = (Type*) malloc(sizeof(Type));
+  type->typeClass = TP_DOUBLE;
+  return type;
+}
+
 Type* makeCharType(void) {
   Type* type = (Type*) malloc(sizeof(Type));
   type->typeClass = TP_CHAR;
+  return type;
+}
+
+//EXERCISE 4 ----------------------------------------------
+Type* makeStringType(void) {
+  Type* type = (Type*) malloc(sizeof(Type));
+  type->typeClass = TP_STRING;
   return type;
 }
 
@@ -61,10 +78,13 @@ int compareType(Type* type1, Type* type2) {
   } else return 0;
 }
 
+//EXERCISE 4 ----------------------------------------------
 void freeType(Type* type) {
   switch (type->typeClass) {
   case TP_INT:
+  case TP_DOUBLE:
   case TP_CHAR:
+  case TP_STRING:
     free(type);
     break;
   case TP_ARRAY:
@@ -83,6 +103,14 @@ ConstantValue* makeIntConstant(int i) {
   return value;
 }
 
+//EXERCISE 4 ----------------------------------------------
+ConstantValue* makeDoubleConstant(double i) {
+  ConstantValue* value = (ConstantValue*) malloc(sizeof(ConstantValue));
+  value->type = TP_DOUBLE;
+  value->doubleValue = i;
+  return value;
+}
+
 ConstantValue* makeCharConstant(char ch) {
   ConstantValue* value = (ConstantValue*) malloc(sizeof(ConstantValue));
   value->type = TP_CHAR;
@@ -90,13 +118,25 @@ ConstantValue* makeCharConstant(char ch) {
   return value;
 }
 
+//EXERCISE 4 ----------------------------------------------
+ConstantValue* makeStringConstant(char*ch) {
+  ConstantValue* value = (ConstantValue*) malloc(sizeof(ConstantValue));
+  value->type = TP_STRING;
+  strcpy(value->stringValue, ch);
+  return value;
+}
+
+//EXERCISE 4 ----------------------------------------------
 ConstantValue* duplicateConstantValue(ConstantValue* v) {
   ConstantValue* value = (ConstantValue*) malloc(sizeof(ConstantValue));
   value->type = v->type;
   if (v->type == TP_INT) 
     value->intValue = v->intValue;
-  else
+  else if (v->type == TP_DOUBLE) 
+    value->doubleValue = v->doubleValue;
+  else if (v->type == TP_CHAR) 
     value->charValue = v->charValue;
+    else strcpy(value->stringValue, v->stringValue);
   return value;
 }
 
@@ -263,6 +303,7 @@ Object* findObject(ObjectNode *objList, char *name) {
 
 /******************* others ******************************/
 
+//EXERCISE 4 ----------------------------------------------
 void initSymTab(void) {
   Object* obj;
   Object* param;
@@ -274,8 +315,16 @@ void initSymTab(void) {
   obj->funcAttrs->returnType = makeCharType();
   addObject(&(symtab->globalObjectList), obj);
 
+  obj = createFunctionObject("READS");
+  obj->funcAttrs->returnType = makeStringType();
+  addObject(&(symtab->globalObjectList), obj);
+  
   obj = createFunctionObject("READI");
   obj->funcAttrs->returnType = makeIntType();
+  addObject(&(symtab->globalObjectList), obj);
+  
+  obj = createFunctionObject("READD");
+  obj->funcAttrs->returnType = makeDoubleType();
   addObject(&(symtab->globalObjectList), obj);
 
   obj = createProcedureObject("WRITEI");
@@ -283,10 +332,22 @@ void initSymTab(void) {
   param->paramAttrs->type = makeIntType();
   addObject(&(obj->procAttrs->paramList),param);
   addObject(&(symtab->globalObjectList), obj);
+  
+    obj = createProcedureObject("WRITED");
+  param = createParameterObject("i", PARAM_VALUE, obj);
+  param->paramAttrs->type = makeDoubleType();
+  addObject(&(obj->procAttrs->paramList),param);
+  addObject(&(symtab->globalObjectList), obj);
 
   obj = createProcedureObject("WRITEC");
   param = createParameterObject("ch", PARAM_VALUE, obj);
   param->paramAttrs->type = makeCharType();
+  addObject(&(obj->procAttrs->paramList),param);
+  addObject(&(symtab->globalObjectList), obj);
+  
+    obj = createProcedureObject("WRITES");
+  param = createParameterObject("ch", PARAM_VALUE, obj);
+  param->paramAttrs->type = makeStringType();
   addObject(&(obj->procAttrs->paramList),param);
   addObject(&(symtab->globalObjectList), obj);
 

@@ -75,19 +75,47 @@ Token* readIdentKeyword(void) {
   return token;
 }
 
-Token* readNumber(void) {
-  Token *token = makeToken(TK_NUMBER, lineNo, colNo);
+//EXERCISE 4 -----------------------------------------------------------------------------------
+Token* readNumber(int dotFlag) {
+  Token *token = makeToken(TK_INT, lineNo, colNo);
   int count = 0;
+  
+  // -.678
+  if(dotFlag == 1) {
+	token->string[count++]='.';
+  }
 
   while ((currentChar != EOF) && (charCodes[currentChar] == CHAR_DIGIT)) {
     token->string[count++] = (char)currentChar;
     readChar();
   }
+  
+  //+2.
+  if((currentChar != EOF) && (charCodes[currentChar] == CHAR_PERIOD) && (dotFlag==0)){
+  	dotFlag=1;
+  	
+  	token->string[count++]='.';
+	readChar();
+	
+	while ((currentChar != EOF) && (charCodes[currentChar] == CHAR_DIGIT)) {
+    token->string[count++] = (char)currentChar;
+    readChar();
+  }
+  }
 
   token->string[count] = '\0';
-  token->value = atoi(token->string);
+  
+  if(dotFlag==1) {
+  	token->tokenType = TK_DOUBLE;
+  	token->doubleValue = atof(token->string);
+  } else {
+  	  token->intValue = atoi(token->string);
+  token->doubleValue = atof(token->string);
+  }
+
   return token;
 }
+//-------------------------------------------------------------------------------------------------------
 
 Token* readConstChar(void) {
   Token *token = makeToken(TK_CHAR, lineNo, colNo);
@@ -119,6 +147,43 @@ Token* readConstChar(void) {
   }
 }
 
+//EXERCISE 4 -----------------------------------------------------------------------------------
+Token* readConstString(void) {
+  Token *token = makeToken(TK_STRING, lineNo, colNo);
+
+  readChar();
+  if (currentChar == EOF) {
+    token->tokenType = TK_NONE;
+    error(ERR_INVALID_CONSTANT_STRING, token->lineNo, token->colNo);
+    return token;
+  }
+    
+  int count = 0;
+  
+    while ((currentChar != EOF) && (charCodes[currentChar] != CHAR_DOUBLEQUOTE)) {
+    token->stringValue[count++] = currentChar;
+    readChar();
+  }
+  token->stringValue[count] = '\0';
+
+  	printf("%c", currentChar);
+  if (currentChar == EOF) {
+    token->tokenType = TK_NONE;
+    error(ERR_INVALID_CONSTANT_STRING, token->lineNo, token->colNo);
+    return token;
+  }
+
+  if (charCodes[currentChar] == CHAR_DOUBLEQUOTE) {
+    readChar();
+    return token;
+  } else {
+    token->tokenType = TK_NONE;
+    error(ERR_INVALID_CONSTANT_STRING, token->lineNo, token->colNo);
+    return token;
+  }
+}
+//-------------------------------------------------------------------------------------------------------
+
 Token* getToken(void) {
   Token *token;
   int ln, cn;
@@ -129,7 +194,11 @@ Token* getToken(void) {
   switch (charCodes[currentChar]) {
   case CHAR_SPACE: skipBlank(); return getToken();
   case CHAR_LETTER: return readIdentKeyword();
-  case CHAR_DIGIT: return readNumber();
+  
+      //EXERCISE 4 --------------------------------
+  case CHAR_DIGIT: return readNumber(0);
+  //------------------------------------------
+  
   case CHAR_PLUS: 
     token = makeToken(SB_PLUS, lineNo, colNo);
     readChar(); 
@@ -182,14 +251,24 @@ Token* getToken(void) {
     token = makeToken(SB_COMMA, lineNo, colNo);
     readChar(); 
     return token;
+    
+    //EXERCISE 4 --------------------------------
   case CHAR_PERIOD:
     ln = lineNo;
     cn = colNo;
     readChar();
-    if ((currentChar != EOF) && (charCodes[currentChar] == CHAR_RPAR)) {
+    
+    switch (charCodes[currentChar]) {
+    case CHAR_RPAR:
       readChar();
       return makeToken(SB_RSEL, ln, cn);
-    } else return makeToken(SB_PERIOD, ln, cn);
+    case CHAR_DIGIT:
+		return readNumber(1);
+    default:
+      return makeToken(SB_PERIOD, ln, cn);
+    }
+    //---------------------------------------------
+    
   case CHAR_SEMICOLON:
     token = makeToken(SB_SEMICOLON, lineNo, colNo);
     readChar(); 
@@ -203,6 +282,11 @@ Token* getToken(void) {
       return makeToken(SB_ASSIGN, ln, cn);
     } else return makeToken(SB_COLON, ln, cn);
   case CHAR_SINGLEQUOTE: return readConstChar();
+  
+  //EXERCISE 4 --------------------------------------
+  case CHAR_DOUBLEQUOTE: 	return readConstString();
+  //-------------------------------------------------
+  
   case CHAR_LPAR:
     ln = lineNo;
     cn = colNo;
@@ -253,7 +337,13 @@ void printToken(Token *token) {
   switch (token->tokenType) {
   case TK_NONE: printf("TK_NONE\n"); break;
   case TK_IDENT: printf("TK_IDENT(%s)\n", token->string); break;
-  case TK_NUMBER: printf("TK_NUMBER(%s)\n", token->string); break;
+  
+  //EXERCISE 4 -------------------------------------
+  //case TK_NUMBER: printf("TK_NUMBER(%s)\n", token->string); break;
+    case TK_INT: printf("TK_INT(%s)\n", token->string); break;
+      case TK_DOUBLE: printf("TK_DOUBLE(%s)\n", token->string); break;
+        case TK_STRING: printf("TK_STRING(\"%s\")\n", token->stringValue); break;
+      //---------------------------------------
   case TK_CHAR: printf("TK_CHAR(\'%s\')\n", token->string); break;
   case TK_EOF: printf("TK_EOF\n"); break;
 
@@ -277,6 +367,10 @@ void printToken(Token *token) {
   case KW_DO: printf("KW_DO\n"); break;
   case KW_FOR: printf("KW_FOR\n"); break;
   case KW_TO: printf("KW_TO\n"); break;
+    //EXERCISE 4 ----------------------------------------------------
+  case KW_STRING: printf("KW_STRING\n"); break;
+  case KW_DOUBLE: printf("KW_DOUBLE\n"); break;
+    //--------------------------------------------------------------------------
 
   case SB_SEMICOLON: printf("SB_SEMICOLON\n"); break;
   case SB_COLON: printf("SB_COLON\n"); break;

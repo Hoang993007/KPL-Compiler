@@ -17,8 +17,14 @@ void printType(Type* type) {
   case TP_INT:
     printf("Int");
     break;
+  case TP_DOUBLE:
+    printf("Double");
+    break;
   case TP_CHAR:
     printf("Char");
+    break;
+  case TP_STRING:
+    printf("String");
     break;
   case TP_ARRAY:
     printf("Arr(%d,",type->arraySize);
@@ -33,8 +39,14 @@ void printConstantValue(ConstantValue* value) {
   case TP_INT:
     printf("%d",value->intValue);
     break;
+  case TP_DOUBLE:
+    printf("%f",value->doubleValue);
+    break;
   case TP_CHAR:
     printf("\'%c\'",value->charValue);
+    break;
+  case TP_STRING:
+    printf("\"%s\"",value->stringValue);
     break;
   default:
     break;

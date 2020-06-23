@@ -27,10 +27,20 @@ void scan(void) {
   free(tmp);
 }
 
+//EXERCISE 4 -------------------------------------
 void eat(TokenType tokenType) {
   if (lookAhead->tokenType == tokenType) {
+  	    printToken(lookAhead);
     scan();
-  } else missingToken(tokenType, lookAhead->lineNo, lookAhead->colNo);
+  } else typeTransform(tokenType);
+}
+
+//EXERCISE 4 -------------------------------------
+void typeTransform(TokenType tokenType) {
+	if(tokenType == TK_DOUBLE){
+		if (lookAhead->tokenType == TK_INT) 
+    scan();
+  }  else missingToken(tokenType, lookAhead->lineNo, lookAhead->colNo);
 }
 
 void compileProgram(void) {
@@ -197,14 +207,20 @@ void compileProcDecl(void) {
   exitBlock();
 }
 
+//EXERCISE 4 -------------------------------------
 ConstantValue* compileUnsignedConstant(void) {
   ConstantValue* constValue;
   Object* obj;
 
   switch (lookAhead->tokenType) {
-  case TK_NUMBER:
-    eat(TK_NUMBER);
-    constValue = makeIntConstant(currentToken->value);
+  case TK_INT:
+    eat(TK_INT);
+    constValue = makeIntConstant(currentToken->intValue);
+    break;
+    
+  case TK_DOUBLE:
+    eat(TK_DOUBLE);
+    constValue = makeDoubleConstant(currentToken->doubleValue);
     break;
   case TK_IDENT:
     eat(TK_IDENT);
@@ -217,6 +233,10 @@ ConstantValue* compileUnsignedConstant(void) {
     eat(TK_CHAR);
     constValue = makeCharConstant(currentToken->string[0]);
     break;
+  case TK_STRING:
+    eat(TK_STRING);
+    constValue = makeStringConstant(currentToken->stringValue);
+    break;
   default:
     error(ERR_INVALID_CONSTANT, lookAhead->lineNo, lookAhead->colNo);
     break;
@@ -224,6 +244,7 @@ ConstantValue* compileUnsignedConstant(void) {
   return constValue;
 }
 
+//EXERCISE 4 -------------------------------------
 ConstantValue* compileConstant(void) {
   ConstantValue* constValue;
 
@@ -241,6 +262,10 @@ ConstantValue* compileConstant(void) {
     eat(TK_CHAR);
     constValue = makeCharConstant(currentToken->string[0]);
     break;
+  case TK_STRING:
+    eat(TK_STRING);
+    constValue = makeStringConstant(currentToken->stringValue);
+    break;
   default:
     constValue = compileConstant2();
     break;
@@ -248,22 +273,30 @@ ConstantValue* compileConstant(void) {
   return constValue;
 }
 
+//EXERCISE 4 -------------------------------------
 ConstantValue* compileConstant2(void) {
   ConstantValue* constValue;
   Object* obj;
 
   switch (lookAhead->tokenType) {
-  case TK_NUMBER:
-    eat(TK_NUMBER);
-    constValue = makeIntConstant(currentToken->value);
+  case TK_INT:
+    eat(TK_INT);
+    constValue = makeIntConstant(currentToken->intValue);
+    break;
+  case TK_DOUBLE:
+    eat(TK_DOUBLE);
+    constValue = makeDoubleConstant(currentToken->doubleValue);
     break;
   case TK_IDENT:
     eat(TK_IDENT);
     obj = checkDeclaredConstant(currentToken->string);
-    if (obj->constAttrs->value->type == TP_INT)
-      constValue = duplicateConstantValue(obj->constAttrs->value);
-    else
-      error(ERR_UNDECLARED_INT_CONSTANT,currentToken->lineNo, currentToken->colNo);
+    if (obj->constAttrs->value->type == TP_INT){
+    	 constValue = duplicateConstantValue(obj->constAttrs->value);
+	} else if (obj->constAttrs->value->type == TP_DOUBLE){
+		    	 constValue = duplicateConstantValue(obj->constAttrs->value);
+	}  else
+      error(ERR_UNDECLARED_DOUBLE_CONSTANT,currentToken->lineNo, currentToken->colNo);
+     
     break;
   default:
     error(ERR_INVALID_CONSTANT, lookAhead->lineNo, lookAhead->colNo);
@@ -272,6 +305,7 @@ ConstantValue* compileConstant2(void) {
   return constValue;
 }
 
+//EXERCISE 4 -------------------------------------
 Type* compileType(void) {
   Type* type;
   Type* elementType;
@@ -283,16 +317,24 @@ Type* compileType(void) {
     eat(KW_INTEGER);
     type =  makeIntType();
     break;
+  case KW_DOUBLE: 
+    eat(KW_DOUBLE);
+    type =  makeDoubleType();
+    break;
   case KW_CHAR: 
     eat(KW_CHAR); 
     type = makeCharType();
     break;
+  case KW_STRING: 
+    eat(KW_STRING);
+    type =  makeStringType();
+    break;
   case KW_ARRAY:
     eat(KW_ARRAY);
     eat(SB_LSEL);
-    eat(TK_NUMBER);
+    eat(TK_INT);
 
-    arraySize = currentToken->value;
+    arraySize = currentToken->intValue;
 
     eat(SB_RSEL);
     eat(KW_OF);
@@ -311,6 +353,7 @@ Type* compileType(void) {
   return type;
 }
 
+//EXERCISE 4 -------------------------------------
 Type* compileBasicType(void) {
   Type* type;
 
@@ -319,9 +362,17 @@ Type* compileBasicType(void) {
     eat(KW_INTEGER); 
     type = makeIntType();
     break;
+  case KW_DOUBLE: 
+    eat(KW_DOUBLE); 
+    type = makeDoubleType();
+    break;
   case KW_CHAR: 
     eat(KW_CHAR); 
     type = makeCharType();
+    break;
+  case KW_STRING: 
+    eat(KW_STRING); 
+    type = makeStringType();
     break;
   default:
     error(ERR_INVALID_BASICTYPE, lookAhead->lineNo, lookAhead->colNo);
@@ -604,6 +655,7 @@ void compileCondition(void) {
   checkTypeEquality(exp1, exp2);
 }
 
+//EXERCISE 4 -------------------------------------
 Type* compileExpression(void) {
   Type* type;
   
@@ -611,12 +663,12 @@ Type* compileExpression(void) {
   case SB_PLUS:
     eat(SB_PLUS);
     type = compileExpression2();
-    checkIntType(type);
+    checkNumType(type);
     break;
   case SB_MINUS:
     eat(SB_MINUS);
     type = compileExpression2();
-    checkIntType(type);
+    checkNumType(type);
     break;
   default:
     type = compileExpression2();
@@ -633,7 +685,7 @@ Type* compileExpression2(void) {
   return type;
 }
 
-
+//EXERCISE 4 -------------------------------------
 void compileExpression3(void) {
   Type* type;
 
@@ -641,13 +693,13 @@ void compileExpression3(void) {
   case SB_PLUS:
     eat(SB_PLUS);
     type = compileTerm();
-    checkIntType(type);
+    checkNumType(type);
     compileExpression3();
     break;
   case SB_MINUS:
     eat(SB_MINUS);
     type = compileTerm();
-    checkIntType(type);
+    checkNumType(type);
     compileExpression3();
     break;
     // check the FOLLOW set
@@ -681,6 +733,7 @@ Type* compileTerm(void) {
   return type;
 }
 
+//EXERCISE 4 -------------------------------------
 void compileTerm2(void) {
   Type* type;
 
@@ -688,13 +741,13 @@ void compileTerm2(void) {
   case SB_TIMES:
     eat(SB_TIMES);
     type = compileFactor();
-    checkIntType(type);
+    checkNumType(type);
     compileTerm2();
     break;
   case SB_SLASH:
     eat(SB_SLASH);
     type = compileFactor();
-    checkIntType(type);
+    checkNumType(type);
     compileTerm2();
     break;
     // check the FOLLOW set
@@ -721,6 +774,7 @@ void compileTerm2(void) {
   }
 }
 
+//EXERCISE 4 -------------------------------------
 Type* compileFactor(void) {
   // parse a factor and return the factor's type
 
@@ -728,14 +782,28 @@ Type* compileFactor(void) {
   Type* type = NULL;
 
   switch (lookAhead->tokenType) {
-  case TK_NUMBER:
-    eat(TK_NUMBER);
+  case TK_INT:
+    eat(TK_INT);
     type = makeIntType();
     break;
+    
+  case TK_DOUBLE:
+    eat(TK_DOUBLE);
+    type = makeDoubleType();
+    break;
+    
   case TK_CHAR:
     eat(TK_CHAR);
     type = makeCharType();
     break;
+    
+case TK_STRING:
+
+    eat(TK_STRING);
+    type = makeStringType();
+    break;
+    
+    
   case TK_IDENT:
     eat(TK_IDENT);
     // check if the identifier is declared

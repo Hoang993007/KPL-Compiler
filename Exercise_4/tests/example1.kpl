@@ -1,3 +1,10 @@
-Program Example1; (* Example 1 *)
-Begin
-End. (* Example 1 *)
+program exam;
+var	n	:	double;
+	s	:	string;
+function F (n : double; s: string) : string;
+begin
+	if n<0 then F:= " " else F:=F(n-1, s) + F(n-1, s);
+end;
+begin
+	call writeS(F(10.5, "hello"));
+end.

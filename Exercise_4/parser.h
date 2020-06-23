@@ -9,6 +9,7 @@
 #include "symtab.h"
 
 void scan(void);
+void typeTransform(TokenType tokenType);
 void eat(TokenType tokenType);
 
 void compileProgram(void);

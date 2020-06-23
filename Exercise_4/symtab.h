@@ -9,9 +9,12 @@
 
 #include "token.h"
 
+//EXERCISE 4 ---------------------------
 enum TypeClass {
   TP_INT,
+  TP_DOUBLE,
   TP_CHAR,
+  TP_STRING,
   TP_ARRAY
 };
 
@@ -39,12 +42,14 @@ struct Type_ {
 typedef struct Type_ Type;
 typedef struct Type_ BasicType;
 
-
+//EXERCISE 4 ---------------------------
 struct ConstantValue_ {
   enum TypeClass type;
   union {
     int intValue;
+    double doubleValue;
     char charValue;
+    char stringValue[MAX_IDENT_LEN + 1];
   };
 };
 
@@ -136,14 +141,18 @@ struct SymTab_ {
 typedef struct SymTab_ SymTab;
 
 Type* makeIntType(void);
+Type* makeDoubleType(void);
 Type* makeCharType(void);
+Type* makeStringType(void);
 Type* makeArrayType(int arraySize, Type* elementType);
 Type* duplicateType(Type* type);
 int compareType(Type* type1, Type* type2);
 void freeType(Type* type);
 
 ConstantValue* makeIntConstant(int i);
+ConstantValue* makeDoubleConstant(double i);
 ConstantValue* makeCharConstant(char ch);
+ConstantValue* makeStringConstant(char*ch);
 ConstantValue* duplicateConstantValue(ConstantValue* v);
 
 Scope* createScope(Object* owner, Scope* outer);

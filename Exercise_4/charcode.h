@@ -24,6 +24,9 @@ typedef enum {
   CHAR_COLON,
   CHAR_SEMICOLON,
   CHAR_SINGLEQUOTE,
+  //EXERCISE 4 ------------------------
+    CHAR_DOUBLEQUOTE,
+    //--------------------------------
   CHAR_LPAR,
   CHAR_RPAR,
   CHAR_UNKNOWN
