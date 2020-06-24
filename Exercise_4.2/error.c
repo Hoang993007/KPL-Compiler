@@ -9,7 +9,7 @@
 #include "error.h"
 
 //EXERCISE 4 -------------------------------------------------
-#define NUM_OF_ERRORS 32
+#define NUM_OF_ERRORS 33
 
 struct ErrorMessage {
   ErrorCode errorCode;
@@ -17,7 +17,7 @@ struct ErrorMessage {
 };
 
 //EXERCISE 4 -------------------------------------------------
-struct ErrorMessage errors[32] = {
+struct ErrorMessage errors[33] = {
   {ERR_END_OF_COMMENT, "End of comment expected."},
   {ERR_IDENT_TOO_LONG, "Identifier too long."},
   {ERR_INVALID_CONSTANT_CHAR, "Invalid char constant."},
@@ -49,7 +49,8 @@ struct ErrorMessage errors[32] = {
   {ERR_UNDECLARED_PROCEDURE, "Undeclared procedure."},
   {ERR_DUPLICATE_IDENT, "Duplicate identifier."},
   {ERR_TYPE_INCONSISTENCY, "Type inconsistency"},
-  {ERR_PARAMETERS_ARGUMENTS_INCONSISTENCY, "The number of arguments and the number of parameters are inconsistent."}
+  {ERR_PARAMETERS_ARGUMENTS_INCONSISTENCY, "The number of arguments and the number of parameters are inconsistent."},
+    {ERR_NOT_ENOUGH_VARIABLE, "Not enough variable."}
 };
 
 void error(ErrorCode err, int lineNo, int colNo) {

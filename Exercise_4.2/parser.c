@@ -39,7 +39,7 @@ void eat(TokenType tokenType) {
 void typeTransform(TokenType tokenType) {
   if(tokenType == TK_DOUBLE){
     if (lookAhead->tokenType == TK_INT) {
-      lookAhead->tokenType =TK_DOUBLE;
+      lookAhead->tokenType = TK_DOUBLE;
       lookAhead->doubleValue = (double)(lookAhead->intValue);//ep kieu
       scan();
     }
@@ -463,7 +463,7 @@ void compileStatement(void) {
   }
 }
 
-Type* compileLValue(void) {
+Type* compileLValue() {
   // parse a lvalue (a variable, an array element, a parameter, the current function identifier)
   Object* var = NULL;
   Type* varType = NULL;
@@ -471,26 +471,59 @@ Type* compileLValue(void) {
   eat(TK_IDENT);
   // check if the identifier is a function identifier, or a variable identifier, or a parameter  
   var = checkDeclaredLValueIdent(currentToken->string);
+  
   if (var->kind == OBJ_VARIABLE)
     varType = compileIndexes(var->varAttrs->type);
   else if (var->kind == OBJ_FUNCTION)
     varType = var->funcAttrs->returnType;
   else if (var->kind == OBJ_PARAMETER)
     varType = var->paramAttrs->type;
-
+    
   return varType;
 }
 
+//EXERCISE 4.2 ------------------------------------------------
 void compileAssignSt(void) {
   // parse the assignment and check type consistency
-  Type *lvalueType = NULL;
-  Type *expType = NULL;
-
-  lvalueType = compileLValue();
+  Type *lvalueType[100];
+  int i;
+  for(i=0; i<100; i++) 
+    lvalueType[i]= NULL;
+  
+  int lvalueTypeNum = 0;
+    
+  Type *expType[100];
+  for(i=0; i<100; i++) 
+    expType[i]= NULL;
+  
+  int expTypeNum = 0;
+  
+  lvalueTypeNum=lvalueTypeNum+1;
+  lvalueType[lvalueTypeNum-1]=  compileLValue();
+  while(lookAhead->tokenType==SB_COMMA){
+    eat(SB_COMMA);
+    lvalueTypeNum=lvalueTypeNum+1;
+    lvalueType[lvalueTypeNum-1]=  compileLValue();
+  }
+  
   eat(SB_ASSIGN);
-  expType =  compileExpression();
+  
+  expTypeNum=expTypeNum+1;
+  expType[expTypeNum-1]=    compileExpression();
+  while(lookAhead->tokenType==SB_COMMA){
+    eat(SB_COMMA);
+    expTypeNum=expTypeNum+1;
+    expType[expTypeNum-1]=    compileExpression();
+  }
 
-  checkTypeEquality(lvalueType, expType);
+  if(lvalueTypeNum!=expTypeNum){
+
+    error(ERR_NOT_ENOUGH_VARIABLE, lookAhead->lineNo, lookAhead->colNo);
+  }else{
+    int i;
+    for(i=0; i<lvalueTypeNum; i++)
+      checkTypeEquality(lvalueType[i], expType[i]);
+  } 
 }
 
 void compileCallSt(void) {
@@ -583,9 +616,9 @@ void compileArguments(ObjectNode* paramList) {
       eat(SB_COMMA);
       paramList = paramList->next;
       if (paramList != NULL)
-	compileArgument(paramList->object);
+        compileArgument(paramList->object);
       else
-	error(ERR_PARAMETERS_ARGUMENTS_INCONSISTENCY, currentToken->lineNo, currentToken->colNo);
+        error(ERR_PARAMETERS_ARGUMENTS_INCONSISTENCY, currentToken->lineNo, currentToken->colNo);
     }
     
     // param list still has next one when we've done parsing arguments
@@ -660,7 +693,7 @@ void compileCondition(void) {
 }
 
 //EXERCISE 4 -------------------------------------
-Type* compileExpression(void) {
+Type* compileExpression() {
   Type* type;
   
   switch (lookAhead->tokenType) {
@@ -679,6 +712,7 @@ Type* compileExpression(void) {
   default:
     type = compileExpression2();
   }
+
   return type;
 }
 
@@ -868,9 +902,9 @@ Type* compileFactor(void) {
       break;
     case OBJ_VARIABLE:
       if (obj->varAttrs->type->typeClass != TP_ARRAY)
-	type = obj->varAttrs->type;
+        type = obj->varAttrs->type;
       else
-	type = compileIndexes(obj->varAttrs->type);
+        type = compileIndexes(obj->varAttrs->type);
       break;
     case OBJ_PARAMETER:
       type = obj->paramAttrs->type;

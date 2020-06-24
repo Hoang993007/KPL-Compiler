@@ -30,19 +30,19 @@ void scan(void) {
 //EXERCISE 4 -------------------------------------
 void eat(TokenType tokenType) {
   if (lookAhead->tokenType == tokenType) {
-    printToken(lookAhead);
+  	    printToken(lookAhead);
     scan();
   } else typeTransform(tokenType);
 }
 
 //EXERCISE 4 -------------------------------------
 void typeTransform(TokenType tokenType) {
-  if(tokenType == TK_DOUBLE){
-    if (lookAhead->tokenType == TK_INT) {
-      lookAhead->tokenType =TK_DOUBLE;
-      lookAhead->doubleValue = (double)(lookAhead->intValue);//ep kieu
-      scan();
-    }
+	if(tokenType == TK_DOUBLE){
+		if (lookAhead->tokenType == TK_INT) {
+			lookAhead->tokenType == TK_DOUBLE;
+			lookAhead->doubleValue == (double)(lookAhead->intValue);//ep kieu
+			scan();
+		}
   }  else missingToken(tokenType, lookAhead->lineNo, lookAhead->colNo);
 }
 
@@ -294,10 +294,10 @@ ConstantValue* compileConstant2(void) {
     eat(TK_IDENT);
     obj = checkDeclaredConstant(currentToken->string);
     if (obj->constAttrs->value->type == TP_INT){
-      constValue = duplicateConstantValue(obj->constAttrs->value);
-    } else if (obj->constAttrs->value->type == TP_DOUBLE){
-      constValue = duplicateConstantValue(obj->constAttrs->value);
-    }  else
+    	 constValue = duplicateConstantValue(obj->constAttrs->value);
+	} else if (obj->constAttrs->value->type == TP_DOUBLE){
+		    	 constValue = duplicateConstantValue(obj->constAttrs->value);
+	}  else
       error(ERR_UNDECLARED_DOUBLE_CONSTANT,currentToken->lineNo, currentToken->colNo);
      
     break;
@@ -463,7 +463,7 @@ void compileStatement(void) {
   }
 }
 
-Type* compileLValue(void) {
+Type* compileLValue() {
   // parse a lvalue (a variable, an array element, a parameter, the current function identifier)
   Object* var = NULL;
   Type* varType = NULL;
@@ -471,26 +471,59 @@ Type* compileLValue(void) {
   eat(TK_IDENT);
   // check if the identifier is a function identifier, or a variable identifier, or a parameter  
   var = checkDeclaredLValueIdent(currentToken->string);
+  
   if (var->kind == OBJ_VARIABLE)
     varType = compileIndexes(var->varAttrs->type);
   else if (var->kind == OBJ_FUNCTION)
     varType = var->funcAttrs->returnType;
   else if (var->kind == OBJ_PARAMETER)
     varType = var->paramAttrs->type;
-
+    
   return varType;
 }
 
+//EXERCISE 4.2 ------------------------------------------------
 void compileAssignSt(void) {
   // parse the assignment and check type consistency
-  Type *lvalueType = NULL;
-  Type *expType = NULL;
-
-  lvalueType = compileLValue();
+  Type *lvalueType[100];
+  int i;
+  for(i=0; i<100; i++) 
+  lvalueType[i]= NULL;
+  
+    int lvalueTypeNum = 0;
+    
+  Type *expType[100];
+  for(i=0; i<100; i++) 
+  expType[i]= NULL;
+  
+  int expTypeNum = 0;
+  
+  lvalueTypeNum=lvalueTypeNum+1;
+  lvalueType[lvalueTypeNum-1]=  compileLValue();
+  while(lookAhead->tokenType==SB_COMMA){
+  	eat(SB_COMMA);
+  	  lvalueTypeNum=lvalueTypeNum+1;
+  lvalueType[lvalueTypeNum-1]=  compileLValue();
+  }
+  
   eat(SB_ASSIGN);
-  expType =  compileExpression();
+  
+    expTypeNum=expTypeNum+1;
+  expType[expTypeNum-1]=    compileExpression();
+  while(lookAhead->tokenType==SB_COMMA){
+  	eat(SB_COMMA);
+    expTypeNum=expTypeNum+1;
+  expType[expTypeNum-1]=    compileExpression();
+  }
 
-  checkTypeEquality(lvalueType, expType);
+  if(lvalueTypeNum!=expTypeNum){
+
+  	    error(ERR_NOT_ENOUGH_VARIABLE, lookAhead->lineNo, lookAhead->colNo);
+  }else{
+  	int i;
+  	for(i=0; i<lvalueTypeNum; i++)
+  checkTypeEquality(lvalueType[i], expType[i]);
+  } 
 }
 
 void compileCallSt(void) {
@@ -561,9 +594,9 @@ void compileArgument(Object* param) {
   //       If the corresponding parameter is a reference, the argument must be a lvalue
   if (param->paramAttrs->kind == PARAM_REFERENCE) {
     if (lookAhead->tokenType == TK_IDENT) {
-      checkDeclaredLValueIdent(lookAhead->string);
+        checkDeclaredLValueIdent(lookAhead->string);
     } else {
-      error(ERR_TYPE_INCONSISTENCY, lookAhead->lineNo, lookAhead->colNo);
+        error(ERR_TYPE_INCONSISTENCY, lookAhead->lineNo, lookAhead->colNo);
     }
   }
 
@@ -583,9 +616,9 @@ void compileArguments(ObjectNode* paramList) {
       eat(SB_COMMA);
       paramList = paramList->next;
       if (paramList != NULL)
-	compileArgument(paramList->object);
+        compileArgument(paramList->object);
       else
-	error(ERR_PARAMETERS_ARGUMENTS_INCONSISTENCY, currentToken->lineNo, currentToken->colNo);
+        error(ERR_PARAMETERS_ARGUMENTS_INCONSISTENCY, currentToken->lineNo, currentToken->colNo);
     }
     
     // param list still has next one when we've done parsing arguments
@@ -617,7 +650,7 @@ void compileArguments(ObjectNode* paramList) {
   case KW_THEN:
     // Param list exists but we don't see left parenthesis
     if (paramList->object != NULL)
-      error(ERR_PARAMETERS_ARGUMENTS_INCONSISTENCY, currentToken->lineNo, currentToken->colNo);
+          error(ERR_PARAMETERS_ARGUMENTS_INCONSISTENCY, currentToken->lineNo, currentToken->colNo);
     break;
   default:
     error(ERR_INVALID_ARGUMENTS, lookAhead->lineNo, lookAhead->colNo);
@@ -660,12 +693,12 @@ void compileCondition(void) {
 }
 
 //EXERCISE 4 -------------------------------------
-Type* compileExpression(void) {
+Type* compileExpression() {
   Type* type;
   
   switch (lookAhead->tokenType) {
-    //with SB_PLUS and SB_MINUS, the following Token must have of Number
-    //So with add two string, we have not to check error that expression start with SB_PLUS or SB_MINUS
+  	//with SB_PLUS and SB_MINUS, the following Token must have of Number
+  	//So with add two string, we have not to check error that expression start with SB_PLUS or SB_MINUS
   case SB_PLUS:
     eat(SB_PLUS);
     type = compileExpression2();
@@ -679,6 +712,7 @@ Type* compileExpression(void) {
   default:
     type = compileExpression2();
   }
+
   return type;
 }
 
@@ -687,7 +721,7 @@ Type* compileExpression2(void) {
   Type* type;
 
   type = compileTerm();
-  if (type->typeClass == TP_STRING)//Neu bat dau cua Expression la mot String:
+    if (type->typeClass == TP_STRING)//Neu bat dau cua Expression la mot String:
     compileExpression4();//Dung cho phep cong 2 xau
     
   compileExpression3();//Expression3 Dung cho cong so
@@ -775,7 +809,7 @@ Type* compileTerm(void) {
   type = compileFactor();
   if (type->typeClass == TP_STRING)
     return type;//phep cong hai xau
-  //vi compilieTerm2 dung cho phep * va / ma minh khong can xet den vi o day chi xet phpe + xau
+    //vi compilieTerm2 dung cho phep * va / ma minh khong can xet den vi o day chi xet phpe + xau
   
   compileTerm2();
 
@@ -846,7 +880,7 @@ Type* compileFactor(void) {
     type = makeCharType();
     break;
     
-  case TK_STRING:
+case TK_STRING:
 
     eat(TK_STRING);
     type = makeStringType();
@@ -868,9 +902,9 @@ Type* compileFactor(void) {
       break;
     case OBJ_VARIABLE:
       if (obj->varAttrs->type->typeClass != TP_ARRAY)
-	type = obj->varAttrs->type;
+        type = obj->varAttrs->type;
       else
-	type = compileIndexes(obj->varAttrs->type);
+        type = compileIndexes(obj->varAttrs->type);
       break;
     case OBJ_PARAMETER:
       type = obj->paramAttrs->type;

@@ -12,6 +12,7 @@
 #include "parser.h"
 
 /******************************************************************/
+/*
 int main(int argc, char *argv[]) {
   if (argc <= 1) {
     printf("parser: no input file.\n");
@@ -24,4 +25,12 @@ int main(int argc, char *argv[]) {
   }
  
   return 0;
-} 
+}  */ 
+
+int main(){
+	char sour[]="tests\\example5.kpl";
+	if (compile(sour) == IO_ERROR) {
+    printf("Can\'t read input file!\n");
+    return -1;
+  }
+}

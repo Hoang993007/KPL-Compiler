@@ -36,7 +36,7 @@ void compileParams(void);
 void compileParam(void);
 void compileStatements(void);
 void compileStatement(void);
-Type* compileLValue(void);
+Type* compileLValue();
 void compileAssignSt(void);
 void compileCallSt(void);
 void compileGroupSt(void);
@@ -47,7 +47,7 @@ void compileForSt(void);
 void compileArgument(Object* param);
 void compileArguments(ObjectNode* paramList);
 void compileCondition(void);
-Type* compileExpression(void);
+Type* compileExpression();
 Type* compileExpression2(void);
 void compileExpression3(void);
 
