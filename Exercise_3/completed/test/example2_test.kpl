@@ -1,0 +1,22 @@
+Program Example2; (* Factorial *)
+   
+Var n : Integer;
+    num : integer;
+
+Procedure INPUT;
+BEGIN
+  N := READI;
+END;
+
+Function Fibonaci(n : integer) : integer;
+Begin
+  If n=1 then Fibonaci:=1;
+  If n=2 then Fibonaci:=1;
+  If n>2 then Fibonaci:=Fibonaci(n-1) + Fibonaci(n-2);
+End; 
+
+Begin
+ Call input;
+ num:=Fibonaci(n);
+ call writei(num);
+End. (* Factorial *)

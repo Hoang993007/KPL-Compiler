@@ -14,6 +14,8 @@
 #include "debug.h"
 #include "codegen.h"
 
+int selfCheck=1;
+
 Token *currentToken;
 Token *lookAhead;
 
@@ -36,6 +38,10 @@ void eat(TokenType tokenType) {
 }
 
 void compileProgram(void) {
+
+if(selfCheck==1)
+printf("compileProgram \n");
+
   Object* program;
 
   eat(KW_PROGRAM);
@@ -50,12 +56,18 @@ void compileProgram(void) {
   compileBlock();
   eat(SB_PERIOD);
 
+if(selfCheck==1)
+printf("genHL \n");
   genHL();
 
   exitBlock();
 }
 
 void compileConstDecls(void) {
+
+if(selfCheck==1)
+printf("compileConstDecls \n");
+
   Object* constObj;
   ConstantValue* constValue;
 
@@ -77,6 +89,10 @@ void compileConstDecls(void) {
 }
 
 void compileTypeDecls(void) {
+
+if(selfCheck==1)
+printf("compileTypeDecls \n");
+
   Object* typeObj;
   Type* actualType;
 
@@ -99,6 +115,10 @@ void compileTypeDecls(void) {
 }
 
 void compileVarDecls(void) {
+
+if(selfCheck==1)
+printf("compileVarDecls \n");
+
   Object* varObj;
   Type* varType;
 
@@ -118,8 +138,14 @@ void compileVarDecls(void) {
 }
 
 void compileBlock(void) {
+
+if(selfCheck==1)
+printf("compileBlock \n");
+
   Instruction* jmp;
   
+if(selfCheck==1)
+printf("genJ \n");
   jmp = genJ(DC_VALUE);
 
   compileConstDecls();
@@ -128,6 +154,8 @@ void compileBlock(void) {
   compileSubDecls();
 
   updateJ(jmp,getCurrentCodeAddress());
+if(selfCheck==1)
+printf("genINT \n");
   genINT(symtab->currentScope->frameSize);
 
   eat(KW_BEGIN);
@@ -136,6 +164,10 @@ void compileBlock(void) {
 }
 
 void compileSubDecls(void) {
+
+if(selfCheck==1)
+printf("compileSubDecls \n");
+
   while ((lookAhead->tokenType == KW_FUNCTION) || (lookAhead->tokenType == KW_PROCEDURE)) {
     if (lookAhead->tokenType == KW_FUNCTION)
       compileFuncDecl();
@@ -144,6 +176,10 @@ void compileSubDecls(void) {
 }
 
 void compileFuncDecl(void) {
+
+if(selfCheck==1)
+printf("compileFuncDecl \n");
+
   Object* funcObj;
   Type* returnType;
 
@@ -167,6 +203,8 @@ void compileFuncDecl(void) {
 
   compileBlock();
 
+if(selfCheck==1)
+printf("genEF \n");
   genEF();
   eat(SB_SEMICOLON);
 
@@ -174,6 +212,10 @@ void compileFuncDecl(void) {
 }
 
 void compileProcDecl(void) {
+
+if(selfCheck==1)
+printf("compileProcDecl \n");
+
   Object* procObj;
 
   eat(KW_PROCEDURE);
@@ -191,6 +233,8 @@ void compileProcDecl(void) {
   eat(SB_SEMICOLON);
   compileBlock();
 
+if(selfCheck==1)
+printf("genEP \n");
   genEP();
   eat(SB_SEMICOLON);
 
@@ -198,6 +242,10 @@ void compileProcDecl(void) {
 }
 
 ConstantValue* compileUnsignedConstant(void) {
+
+if(selfCheck==1)
+printf("compileUnsignedConstant \n");
+
   ConstantValue* constValue;
   Object* obj;
 
@@ -225,6 +273,10 @@ ConstantValue* compileUnsignedConstant(void) {
 }
 
 ConstantValue* compileConstant(void) {
+
+if(selfCheck==1)
+printf("compileConstant \n");
+
   ConstantValue* constValue;
 
   switch (lookAhead->tokenType) {
@@ -249,6 +301,10 @@ ConstantValue* compileConstant(void) {
 }
 
 ConstantValue* compileConstant2(void) {
+
+if(selfCheck==1)
+printf("compileConstant2 \n");
+
   ConstantValue* constValue;
   Object* obj;
 
@@ -273,6 +329,10 @@ ConstantValue* compileConstant2(void) {
 }
 
 Type* compileType(void) {
+
+if(selfCheck==1)
+printf("compileType \n");
+
   Type* type;
   Type* elementType;
   int arraySize;
@@ -312,6 +372,10 @@ Type* compileType(void) {
 }
 
 Type* compileBasicType(void) {
+
+if(selfCheck==1)
+printf("compileBasicType \n");
+
   Type* type;
 
   switch (lookAhead->tokenType) {
@@ -331,6 +395,10 @@ Type* compileBasicType(void) {
 }
 
 void compileParams(void) {
+
+if(selfCheck==1)
+printf("compileParams \n");
+
   if (lookAhead->tokenType == SB_LPAR) {
     eat(SB_LPAR);
     compileParam();
@@ -343,6 +411,10 @@ void compileParams(void) {
 }
 
 void compileParam(void) {
+
+if(selfCheck==1)
+printf("compileParam \n");
+
   Object* param;
   Type* type;
   enum ParamKind paramKind = PARAM_VALUE;
@@ -362,6 +434,10 @@ void compileParam(void) {
 }
 
 void compileStatements(void) {
+
+if(selfCheck==1)
+printf("compileStatements \n");
+
   compileStatement();
   while (lookAhead->tokenType == SB_SEMICOLON) {
     eat(SB_SEMICOLON);
@@ -370,6 +446,10 @@ void compileStatements(void) {
 }
 
 void compileStatement(void) {
+
+if(selfCheck==1)
+printf("compileStatement \n");
+
   switch (lookAhead->tokenType) {
   case TK_IDENT:
     compileAssignSt();
@@ -402,6 +482,10 @@ void compileStatement(void) {
 }
 
 Type* compileLValue(void) {
+
+if(selfCheck==1)
+printf("compileLValue \n");
+
   Object* var;
   Type* varType;
 
@@ -411,6 +495,8 @@ Type* compileLValue(void) {
 
   switch (var->kind) {
   case OBJ_VARIABLE:
+if(selfCheck==1)
+printf("genVariableAddress \n");
     genVariableAddress(var);
 
     if (var->varAttrs->type->typeClass == TP_ARRAY) {
@@ -420,13 +506,20 @@ Type* compileLValue(void) {
       varType = var->varAttrs->type;
     break;
   case OBJ_PARAMETER:
-    if (var->paramAttrs->kind == PARAM_VALUE)
-      genParameterAddress(var);
-    else genParameterValue(var);
+    if (var->paramAttrs->kind == PARAM_VALUE){
+if(selfCheck==1)
+printf("genParameterAddress \n");
+      genParameterAddress(var);}
+    else {
+if(selfCheck==1)
+printf("genParameterValue \n");
+genParameterValue(var);}
 
     varType = var->paramAttrs->type;
     break;
   case OBJ_FUNCTION:
+if(selfCheck==1)
+printf("genReturnValueAddress \n");
     genReturnValueAddress(var);
     varType = var->funcAttrs->returnType;
     break;
@@ -438,6 +531,10 @@ Type* compileLValue(void) {
 }
 
 void compileAssignSt(void) {
+
+if(selfCheck==1)
+printf("compileAssignSt \n");
+
   Type* varType;
   Type* expType;
 
@@ -447,10 +544,16 @@ void compileAssignSt(void) {
   expType = compileExpression();
   checkTypeEquality(varType, expType);
 
+if(selfCheck==1)
+printf("genST \n");
   genST();
 }
 
 void compileCallSt(void) {
+
+if(selfCheck==1)
+printf("compileCallSt \n");
+
   Object* proc;
 
   eat(KW_CALL);
@@ -461,22 +564,38 @@ void compileCallSt(void) {
   
   if (isPredefinedProcedure(proc)) {
     compileArguments(proc->procAttrs->paramList);
+if(selfCheck==1)
+printf("genPredefinedProcedureCall \n");
     genPredefinedProcedureCall(proc);
   } else {
+if(selfCheck==1)
+printf("genINT \n");
     genINT(RESERVED_WORDS);
     compileArguments(proc->procAttrs->paramList);
+if(selfCheck==1)
+printf("genDCT \n");
     genDCT( RESERVED_WORDS + proc->procAttrs->paramCount);
+if(selfCheck==1)
+printf("genProcedureCall \n");
     genProcedureCall(proc);
   }
 }
 
 void compileGroupSt(void) {
+
+if(selfCheck==1)
+printf("compileGroupSt \n");
+
   eat(KW_BEGIN);
   compileStatements();
   eat(KW_END);
 }
 
 void compileIfSt(void) {
+
+if(selfCheck==1)
+printf("compileIfSt \n");
+
   Instruction* fjInstruction;
   Instruction* jInstruction;
 
@@ -484,9 +603,13 @@ void compileIfSt(void) {
   compileCondition();
   eat(KW_THEN);
 
+if(selfCheck==1)
+printf("genFJ \n");
   fjInstruction = genFJ(DC_VALUE);
   compileStatement();
   if (lookAhead->tokenType == KW_ELSE) {
+if(selfCheck==1)
+printf("genJ \n");
     jInstruction = genJ(DC_VALUE);
     updateFJ(fjInstruction, getCurrentCodeAddress());
     eat(KW_ELSE);
@@ -498,20 +621,32 @@ void compileIfSt(void) {
 }
 
 void compileWhileSt(void) {
+
+if(selfCheck==1)
+printf("compileWhileSt \n");
+
   CodeAddress beginWhile;
   Instruction* fjInstruction;
 
   beginWhile = getCurrentCodeAddress();
   eat(KW_WHILE);
   compileCondition();
+if(selfCheck==1)
+printf("genFJ \n");
   fjInstruction = genFJ(DC_VALUE);
   eat(KW_DO);
   compileStatement();
+if(selfCheck==1)
+printf("genJ \n");
   genJ(beginWhile);
   updateFJ(fjInstruction, getCurrentCodeAddress());
 }
 
 void compileForSt(void) {
+
+if(selfCheck==1)
+printf("compileForSt \n");
+
   CodeAddress beginLoop;
   Instruction* fjInstruction;
   Type* varType;
@@ -521,41 +656,76 @@ void compileForSt(void) {
 
   varType = compileLValue();
   eat(SB_ASSIGN);
-
+if(selfCheck==1)
+printf("genCV \n");
   genCV();
   type = compileExpression();
   checkTypeEquality(varType, type);
+if(selfCheck==1)
+printf("genST \n");
   genST();
+if(selfCheck==1)
+printf("genCV \n");
   genCV();
+if(selfCheck==1)
+printf("genLI \n");
   genLI();
   beginLoop = getCurrentCodeAddress();
   eat(KW_TO);
 
   type = compileExpression();
   checkTypeEquality(varType, type);
+if(selfCheck==1)
+printf("genLE \n");
   genLE();
+if(selfCheck==1)
+printf("genFJ \n");
   fjInstruction = genFJ(DC_VALUE);
 
   eat(KW_DO);
   compileStatement();
 
-  genCV();  
+if(selfCheck==1)
+printf("genCV \n");
   genCV();
+if(selfCheck==1)
+printf("genCV \n");  
+  genCV();
+if(selfCheck==1)
+printf("genLI \n");
   genLI();
+if(selfCheck==1)
+printf("genLC \n");
   genLC(1);
+if(selfCheck==1)
+printf("genAD \n");
   genAD();
+if(selfCheck==1)
+printf("genST \n");
   genST();
 
+if(selfCheck==1)
+printf("genCV \n");
   genCV();
+if(selfCheck==1)
+printf("genLI \n");
   genLI();
 
+if(selfCheck==1)
+printf("genJ \n");
   genJ(beginLoop);
   updateFJ(fjInstruction, getCurrentCodeAddress());
+if(selfCheck==1)
+printf("genDCT \n");
   genDCT(1);
 
 }
 
 void compileArgument(Object* param) {
+
+if(selfCheck==1)
+printf("compileArgument \n");
+
   Type* type;
 
   if (param->paramAttrs->kind == PARAM_VALUE) {
@@ -568,6 +738,10 @@ void compileArgument(Object* param) {
 }
 
 void compileArguments(ObjectNode* paramList) {
+
+if(selfCheck==1)
+printf("compileArguments \n");
+
   ObjectNode* node = paramList;
 
   switch (lookAhead->tokenType) {
@@ -618,6 +792,10 @@ void compileArguments(ObjectNode* paramList) {
 }
 
 void compileCondition(void) {
+
+if(selfCheck==1)
+printf("compileCondition \n");
+
   Type* type1;
   Type* type2;
   TokenType op;
@@ -654,21 +832,33 @@ void compileCondition(void) {
 
   switch (op) {
   case SB_EQ:
+if(selfCheck==1)
+printf("genEQ \n");
     genEQ();
     break;
   case SB_NEQ:
+if(selfCheck==1)
+printf("genNE \n");
     genNE();
     break;
   case SB_LE:
+if(selfCheck==1)
+printf("genLE \n");
     genLE();
     break;
   case SB_LT:
+if(selfCheck==1)
+printf("break \n");
     genLT();
     break;
   case SB_GE:
+if(selfCheck==1)
+printf("genGE \n");
     genGE();
     break;
   case SB_GT:
+if(selfCheck==1)
+printf("genGT \n");
     genGT();
     break;
   default:
@@ -678,6 +868,10 @@ void compileCondition(void) {
 }
 
 Type* compileExpression(void) {
+
+if(selfCheck==1)
+printf("compileExpression \n");
+
   Type* type;
   
   switch (lookAhead->tokenType) {
@@ -690,6 +884,8 @@ Type* compileExpression(void) {
     eat(SB_MINUS);
     type = compileExpression2();
     checkIntType(type);
+if(selfCheck==1)
+printf("genNEG \n");
     genNEG();
     break;
   default:
@@ -699,6 +895,10 @@ Type* compileExpression(void) {
 }
 
 Type* compileExpression2(void) {
+
+if(selfCheck==1)
+printf("compileExpression2 \n");
+
   Type* type;
 
   type = compileTerm();
@@ -709,6 +909,10 @@ Type* compileExpression2(void) {
 
 
 Type* compileExpression3(Type* argType1) {
+
+if(selfCheck==1)
+printf("compileExpression3 \n");
+
   Type* argType2;
   Type* resultType;
 
@@ -719,6 +923,8 @@ Type* compileExpression3(Type* argType1) {
     argType2 = compileTerm();
     checkIntType(argType2);
 
+if(selfCheck==1)
+printf("genAD \n");
     genAD();
 
     resultType = compileExpression3(argType1);
@@ -729,6 +935,8 @@ Type* compileExpression3(Type* argType1) {
     argType2 = compileTerm();
     checkIntType(argType2);
 
+if(selfCheck==1)
+printf("genSB \n");
     genSB();
 
     resultType = compileExpression3(argType1);
@@ -758,6 +966,10 @@ Type* compileExpression3(Type* argType1) {
 }
 
 Type* compileTerm(void) {
+
+if(selfCheck==1)
+printf("compileTerm \n");
+
   Type* type;
   type = compileFactor();
   type = compileTerm2(type);
@@ -766,6 +978,10 @@ Type* compileTerm(void) {
 }
 
 Type* compileTerm2(Type* argType1) {
+
+if(selfCheck==1)
+printf("compileTerm2 \n");
+
   Type* argType2;
   Type* resultType;
 
@@ -776,6 +992,8 @@ Type* compileTerm2(Type* argType1) {
     argType2 = compileFactor();
     checkIntType(argType2);
 
+if(selfCheck==1)
+printf("genML \n");
     genML();
 
     resultType = compileTerm2(argType1);
@@ -786,6 +1004,8 @@ Type* compileTerm2(Type* argType1) {
     argType2 = compileFactor();
     checkIntType(argType2);
 
+if(selfCheck==1)
+printf("genDV \n");
     genDV();
 
     resultType = compileTerm2(argType1);
@@ -817,6 +1037,10 @@ Type* compileTerm2(Type* argType1) {
 }
 
 Type* compileFactor(void) {
+
+if(selfCheck==1)
+printf("compileFactor \n");
+
   Type* type;
   Object* obj;
 
@@ -824,11 +1048,15 @@ Type* compileFactor(void) {
   case TK_NUMBER:
     eat(TK_NUMBER);
     type = intType;
+if(selfCheck==1)
+printf("genLC \n");
     genLC(currentToken->value);
     break;
   case TK_CHAR:
     eat(TK_CHAR);
     type = charType;
+if(selfCheck==1)
+printf("genLC \n");
     genLC(currentToken->value);
     break;
   case TK_IDENT:
@@ -840,10 +1068,14 @@ Type* compileFactor(void) {
       switch (obj->constAttrs->value->type) {
       case TP_INT:
 	type = intType;
+if(selfCheck==1)
+printf("genLC \n");
 	genLC(obj->constAttrs->value->intValue);
 	break;
       case TP_CHAR:
 	type = charType;
+if(selfCheck==1)
+printf("genLC \n");
 	genLC(obj->constAttrs->value->charValue);
 	break;
       default:
@@ -852,28 +1084,46 @@ Type* compileFactor(void) {
       break;
     case OBJ_VARIABLE:
       if (obj->varAttrs->type->typeClass == TP_ARRAY) {
+if(selfCheck==1)
+printf("genVariableAddress \n");
 	genVariableAddress(obj);
 	type = compileIndexes(obj->varAttrs->type);
+if(selfCheck==1)
+printf("genLI \n");
 	genLI();
       } else {
 	type = obj->varAttrs->type;
+if(selfCheck==1)
+printf("genVariableValue \n");
 	genVariableValue(obj);
       }
       break;
     case OBJ_PARAMETER:
       type = obj->paramAttrs->type;
+if(selfCheck==1)
+printf("genParameterValue \n");
       genParameterValue(obj);
-      if (obj->paramAttrs->kind == PARAM_REFERENCE)
-	genLI();
+      if (obj->paramAttrs->kind == PARAM_REFERENCE){
+if(selfCheck==1)
+printf("genLI \n");
+	genLI();}
       break;
     case OBJ_FUNCTION:
       if (isPredefinedFunction(obj)) {
 	compileArguments(obj->funcAttrs->paramList);
+if(selfCheck==1)
+printf("genPredefinedFunctionCall \n");
 	genPredefinedFunctionCall(obj);
       } else {
+if(selfCheck==1)
+printf("genINT \n");
 	genINT(4);
 	compileArguments(obj->funcAttrs->paramList);
+if(selfCheck==1)
+printf("genDCT \n");
 	genDCT(4+obj->funcAttrs->paramCount);
+if(selfCheck==1)
+printf("genFunctionCall \n");
 	genFunctionCall(obj);
       }
       type = obj->funcAttrs->returnType;
@@ -896,6 +1146,10 @@ Type* compileFactor(void) {
 }
 
 Type* compileIndexes(Type* arrayType) {
+
+if(selfCheck==1)
+printf("compileIndexes \n");
+
   Type* type;
 
   
@@ -905,8 +1159,14 @@ Type* compileIndexes(Type* arrayType) {
     checkIntType(type);
     checkArrayType(arrayType);
 
+if(selfCheck==1)
+printf("genLC \n");
     genLC(sizeOfType(arrayType->elementType));
+if(selfCheck==1)
+printf("genML \n");
     genML();
+if(selfCheck==1)
+printf("genAD \n");
     genAD();
 
     arrayType = arrayType->elementType;
@@ -926,6 +1186,7 @@ int compile(char *fileName) {
   initSymTab();
 
   compileProgram();
+
 
   cleanSymTab();
   free(currentToken);

@@ -19,6 +19,12 @@ extern Object* writelnProcedure;
 
 CodeBlock* codeBlock;
 
+
+int test=1;
+
+//level của scope hiện tại luôn tính bằng 0.
+//Level của 1 scope không cố định
+//càng ra ngoài (càng ra scope rộng hơn) thì level càng tăng
 int computeNestedLevel(Scope* scope) {
   int level = 0;
   Scope* tmp = symtab->currentScope;
@@ -29,39 +35,97 @@ int computeNestedLevel(Scope* scope) {
   return level;
 }
 
+//Sinh ra địa chỉ cho biến
 void genVariableAddress(Object* var) {
   int level = computeNestedLevel(VARIABLE_SCOPE(var));
   int offset = VARIABLE_OFFSET(var);
+
+  if(test==1){
+    printf("genVariableAddress---------------------\n");
+    printf("Object name: %s\n", var->name);
+    printf("Level: %d\n", level);
+    printf("Offset: %d\n", offset);
+    printf("------------------------\n");
+  }
+
   genLA(level, offset);
 }
 
+//sinh ra địa chỉ cho giá trị của biến
 void genVariableValue(Object* var) {
   int level = computeNestedLevel(VARIABLE_SCOPE(var));
   int offset = VARIABLE_OFFSET(var);
+
+  if(test==1){
+    printf("genVariableValue---------------------\n");
+    printf("Object name: %s\n", var->name);
+    printf("Level: %d\n", level);
+    printf("Offset: %d\n", offset);
+    printf("------------------------\n");
+  }
+
   genLV(level, offset);
 }
 
+//sinh ra địa chỉ cho đối số
 void genParameterAddress(Object* param) {
   int level = computeNestedLevel(PARAMETER_SCOPE(param));
   int offset = PARAMETER_OFFSET(param);
+
+  if(test==1){
+    printf("genParameterAddress---------------------\n");
+    printf("Object name: %s\n", param->name);
+    printf("Level: %d\n", level);
+    printf("Offset: %d\n", offset);
+    printf("------------------------\n");
+  }
+
   genLA(level, offset);
 }
 
+//sinh ra địa chỉ cho giá trị của đối số
 void genParameterValue(Object* param) {
   int level = computeNestedLevel(PARAMETER_SCOPE(param));
   int offset = PARAMETER_OFFSET(param);
+
+  if(test==1){
+    printf("genParameterValue---------------------\n");
+    printf("Object name: %s\n", param->name);
+    printf("Level: %d\n", level);
+    printf("Offset: %d\n", offset);
+    printf("------------------------\n");
+  }
+
   genLV(level, offset);
 }
 
 void genReturnValueAddress(Object* func) {
   int level = computeNestedLevel(FUNCTION_SCOPE(func));
   int offset = RETURN_VALUE_OFFSET;
+
+  if(test==1){
+    printf("genReturnValueAddress---------------------\n");
+    printf("Object name: %s\n", func->name);
+    printf("Level: %d\n", level);
+    printf("Offset: %d\n", offset);
+    printf("------------------------\n");
+  }
+
   genLA(level, offset);
 }
 
 void genReturnValueValue(Object* func) {
   int level = computeNestedLevel(FUNCTION_SCOPE(func));
   int offset = RETURN_VALUE_OFFSET;
+
+  if(test==1){
+    printf("genReturnValueValue---------------------\n");
+    printf("Object name: %s\n", func->name);
+    printf("Level: %d\n", level);
+    printf("Offset: %d\n", offset);
+    printf("------------------------\n");
+  }
+
   genLV(level, offset);
 }
 
@@ -76,6 +140,14 @@ void genPredefinedProcedureCall(Object* proc) {
 
 void genProcedureCall(Object* proc) {
   int level = computeNestedLevel(proc->procAttrs->scope->outer);
+
+  if(test==1){
+    printf("genProcedureCall---------------------\n");
+    printf("Object name: %s\n", proc->name);
+    printf("Level: %d\n", level);
+    printf("------------------------\n");
+  }
+
   genCALL(level, proc->procAttrs->codeAddress);
 }
 
@@ -88,6 +160,14 @@ void genPredefinedFunctionCall(Object* func) {
 
 void genFunctionCall(Object* func) {
   int level = computeNestedLevel(func->funcAttrs->scope->outer);
+
+  if(test==1){
+    printf("genFunctionCall---------------------\n");
+    printf("Object name: %s\n", func->name);
+    printf("Level: %d\n", level);
+    printf("------------------------\n");
+  }
+
   genCALL(level, func->funcAttrs->codeAddress);
 }
 

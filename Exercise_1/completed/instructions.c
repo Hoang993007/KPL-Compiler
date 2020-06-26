@@ -23,6 +23,8 @@ void freeCodeBlock(CodeBlock* codeBlock) {
   free(codeBlock);
 }
 
+//xuat ra 1 dong code trong assembly
+//Moi lan emit code (xuất code) codeSize sẽ tăng lên 1 <-> 1 câu lệnh đc sinh ra
 int emitCode(CodeBlock* codeBlock, enum OpCode op, WORD p, WORD q) {
   Instruction* bottom = codeBlock->code + codeBlock->codeSize;
 
@@ -31,42 +33,48 @@ int emitCode(CodeBlock* codeBlock, enum OpCode op, WORD p, WORD q) {
   bottom->op = op;
   bottom->p = p;
   bottom->q = q;
+
   codeBlock->codeSize ++;
+
+printf("%d: ", codeBlock->codeSize-1);
+    printInstruction(bottom);
+printf("\n---------------\n\n");
+
   return 1;
 }
 
-int emitLA(CodeBlock* codeBlock, WORD p, WORD q) { return emitCode(codeBlock, OP_LA, p, q); }
-int emitLV(CodeBlock* codeBlock, WORD p, WORD q) { return emitCode(codeBlock, OP_LV, p, q); }
-int emitLC(CodeBlock* codeBlock, WORD q) { return emitCode(codeBlock, OP_LC, DC_VALUE, q); }
-int emitLI(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_LI, DC_VALUE, DC_VALUE); }
-int emitINT(CodeBlock* codeBlock, WORD q) { return emitCode(codeBlock, OP_INT, DC_VALUE, q); }
-int emitDCT(CodeBlock* codeBlock, WORD q) { return emitCode(codeBlock, OP_DCT, DC_VALUE, q); }
-int emitJ(CodeBlock* codeBlock, WORD q) { return emitCode(codeBlock, OP_J, DC_VALUE, q); }
-int emitFJ(CodeBlock* codeBlock, WORD q) { return emitCode(codeBlock, OP_FJ, DC_VALUE, q); }
-int emitHL(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_HL, DC_VALUE, DC_VALUE); }
-int emitST(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_ST, DC_VALUE, DC_VALUE); }
-int emitCALL(CodeBlock* codeBlock, WORD p, WORD q) { return emitCode(codeBlock, OP_CALL, p, q); }
-int emitEP(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_EP, DC_VALUE, DC_VALUE); }
-int emitEF(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_EF, DC_VALUE, DC_VALUE); }
-int emitRC(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_RC, DC_VALUE, DC_VALUE); }
-int emitRI(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_RI, DC_VALUE, DC_VALUE); }
-int emitWRC(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_WRC, DC_VALUE, DC_VALUE); }
-int emitWRI(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_WRI, DC_VALUE, DC_VALUE); }
-int emitWLN(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_WLN, DC_VALUE, DC_VALUE); }
-int emitAD(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_AD, DC_VALUE, DC_VALUE); }
-int emitSB(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_SB, DC_VALUE, DC_VALUE); }
-int emitML(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_ML, DC_VALUE, DC_VALUE); }
-int emitDV(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_DV, DC_VALUE, DC_VALUE); }
-int emitNEG(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_NEG, DC_VALUE, DC_VALUE); }
-int emitCV(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_CV, DC_VALUE, DC_VALUE); }
-int emitEQ(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_EQ, DC_VALUE, DC_VALUE); }
-int emitNE(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_NE, DC_VALUE, DC_VALUE); }
-int emitGT(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_GT, DC_VALUE, DC_VALUE); }
-int emitLT(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_LT, DC_VALUE, DC_VALUE); }
-int emitGE(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_GE, DC_VALUE, DC_VALUE); }
-int emitLE(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_LE, DC_VALUE, DC_VALUE); }
+int emitLA(CodeBlock* codeBlock, WORD p, WORD q) {printf("\n---------------"); printf("\nemitLA \n"); return emitCode(codeBlock, OP_LA, p, q); }
+int emitLV(CodeBlock* codeBlock, WORD p, WORD q) {printf("\n---------------"); printf("\nemitLV \n"); return emitCode(codeBlock, OP_LV, p, q); }
+int emitLC(CodeBlock* codeBlock, WORD q) {printf("\n---------------"); printf("\nemitLC \n"); return emitCode(codeBlock, OP_LC, DC_VALUE, q); }
+int emitLI(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitLI \n"); return emitCode(codeBlock, OP_LI, DC_VALUE, DC_VALUE); }
+int emitINT(CodeBlock* codeBlock, WORD q) {printf("\n---------------"); printf("\nemitINT \n"); return emitCode(codeBlock, OP_INT, DC_VALUE, q); }
+int emitDCT(CodeBlock* codeBlock, WORD q) {printf("\n---------------"); printf("\nemitDCT \n"); return emitCode(codeBlock, OP_DCT, DC_VALUE, q); }
+int emitJ(CodeBlock* codeBlock, WORD q) {printf("\n---------------"); printf("\nemitJ \n"); return emitCode(codeBlock, OP_J, DC_VALUE, q); }
+int emitFJ(CodeBlock* codeBlock, WORD q) {printf("\n---------------"); printf("\nemitFJ \n"); return emitCode(codeBlock, OP_FJ, DC_VALUE, q); }
+int emitHL(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitHL \n"); return emitCode(codeBlock, OP_HL, DC_VALUE, DC_VALUE); }
+int emitST(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitST \n"); return emitCode(codeBlock, OP_ST, DC_VALUE, DC_VALUE); }
+int emitCALL(CodeBlock* codeBlock, WORD p, WORD q) {printf("\n---------------"); printf("\nemitCALL \n"); return emitCode(codeBlock, OP_CALL, p, q); }
+int emitEP(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitEP \n"); return emitCode(codeBlock, OP_EP, DC_VALUE, DC_VALUE); }
+int emitEF(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitEF \n"); return emitCode(codeBlock, OP_EF, DC_VALUE, DC_VALUE); }
+int emitRC(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitRC \n"); return emitCode(codeBlock, OP_RC, DC_VALUE, DC_VALUE); }
+int emitRI(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitRI \n"); return emitCode(codeBlock, OP_RI, DC_VALUE, DC_VALUE); }
+int emitWRC(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitWRC \n"); return emitCode(codeBlock, OP_WRC, DC_VALUE, DC_VALUE); }
+int emitWRI(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitWRI \n"); return emitCode(codeBlock, OP_WRI, DC_VALUE, DC_VALUE); }
+int emitWLN(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitWLN \n"); return emitCode(codeBlock, OP_WLN, DC_VALUE, DC_VALUE); }
+int emitAD(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitAD \n"); return emitCode(codeBlock, OP_AD, DC_VALUE, DC_VALUE); }
+int emitSB(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitSB \n"); return emitCode(codeBlock, OP_SB, DC_VALUE, DC_VALUE); }
+int emitML(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitML \n"); return emitCode(codeBlock, OP_ML, DC_VALUE, DC_VALUE); }
+int emitDV(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitDV \n"); return emitCode(codeBlock, OP_DV, DC_VALUE, DC_VALUE); }
+int emitNEG(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitNEG \n"); return emitCode(codeBlock, OP_NEG, DC_VALUE, DC_VALUE); }
+int emitCV(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitCV \n"); return emitCode(codeBlock, OP_CV, DC_VALUE, DC_VALUE); }
+int emitEQ(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitEQ \n"); return emitCode(codeBlock, OP_EQ, DC_VALUE, DC_VALUE); }
+int emitNE(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitNE \n"); return emitCode(codeBlock, OP_NE, DC_VALUE, DC_VALUE); }
+int emitGT(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitGT \n"); return emitCode(codeBlock, OP_GT, DC_VALUE, DC_VALUE); }
+int emitLT(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitLT \n"); return emitCode(codeBlock, OP_LT, DC_VALUE, DC_VALUE); }
+int emitGE(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitGE \n"); return emitCode(codeBlock, OP_GE, DC_VALUE, DC_VALUE); }
+int emitLE(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitLE \n"); return emitCode(codeBlock, OP_LE, DC_VALUE, DC_VALUE); }
 
-int emitBP(CodeBlock* codeBlock) { return emitCode(codeBlock, OP_BP, DC_VALUE, DC_VALUE); }
+int emitBP(CodeBlock* codeBlock) {printf("\n---------------"); printf("\nemitBP \n"); return emitCode(codeBlock, OP_BP, DC_VALUE, DC_VALUE); }
 
 
 void printInstruction(Instruction* inst) {
@@ -107,11 +115,14 @@ void printInstruction(Instruction* inst) {
   }
 }
 
+//In ra tat ca cac cau lenh trong assembli
 void printCodeBlock(CodeBlock* codeBlock) {
   Instruction* pc = codeBlock->code;
   int i;
   for (i = 0 ; i < codeBlock->codeSize; i ++) {
     printf("%d:  ",i);
+//Moi instruction la mot lenh trong assembly
+//codeSize la so code duoc tao ra tu chuong trinh goc khi chuyen doi thanh ma assembly
     printInstruction(pc);
     printf("\n");
     pc ++;

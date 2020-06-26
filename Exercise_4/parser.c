@@ -13,6 +13,8 @@
 #include "error.h"
 #include "debug.h"
 
+int checkError=0;
+
 Token *currentToken;
 Token *lookAhead;
 
@@ -29,6 +31,9 @@ void scan(void) {
 
 //EXERCISE 4 -------------------------------------
 void eat(TokenType tokenType) {
+  if(checkError==1)
+    printf("eat\n");
+  
   if (lookAhead->tokenType == tokenType) {
     printToken(lookAhead);
     scan();
@@ -37,6 +42,9 @@ void eat(TokenType tokenType) {
 
 //EXERCISE 4 -------------------------------------
 void typeTransform(TokenType tokenType) {
+    if(checkError==1)
+    printf("typeTransform\n");
+    
   if(tokenType == TK_DOUBLE){
     if (lookAhead->tokenType == TK_INT) {
       lookAhead->tokenType =TK_DOUBLE;
@@ -47,6 +55,9 @@ void typeTransform(TokenType tokenType) {
 }
 
 void compileProgram(void) {
+    if(checkError==1)
+    printf("compileProgram\n");
+    
   Object* program;
 
   eat(KW_PROGRAM);
@@ -64,6 +75,9 @@ void compileProgram(void) {
 }
 
 void compileBlock(void) {
+    if(checkError==1)
+    printf("compileBlock\n");
+    
   Object* constObj;
   ConstantValue* constValue;
 
@@ -91,6 +105,9 @@ void compileBlock(void) {
 }
 
 void compileBlock2(void) {
+    if(checkError==1)
+    printf("compileBlock2\n");
+    
   Object* typeObj;
   Type* actualType;
 
@@ -118,6 +135,9 @@ void compileBlock2(void) {
 }
 
 void compileBlock3(void) {
+    if(checkError==1)
+    printf("compileBlock3\n");
+    
   Object* varObj;
   Type* varType;
 
@@ -145,17 +165,26 @@ void compileBlock3(void) {
 }
 
 void compileBlock4(void) {
+    if(checkError==1)
+    printf("compileBlock4\n");
+    
   compileSubDecls();
   compileBlock5();
 }
 
 void compileBlock5(void) {
+    if(checkError==1)
+    printf("compileBlock5\n");
+    
   eat(KW_BEGIN);
   compileStatements();
   eat(KW_END);
 }
 
 void compileSubDecls(void) {
+    if(checkError==1)
+    printf("compileSubDecls\n");
+    
   while ((lookAhead->tokenType == KW_FUNCTION) || (lookAhead->tokenType == KW_PROCEDURE)) {
     if (lookAhead->tokenType == KW_FUNCTION)
       compileFuncDecl();
@@ -164,6 +193,9 @@ void compileSubDecls(void) {
 }
 
 void compileFuncDecl(void) {
+    if(checkError==1)
+    printf("compileFuncDecl\n");
+    
   Object* funcObj;
   Type* returnType;
 
@@ -190,6 +222,9 @@ void compileFuncDecl(void) {
 }
 
 void compileProcDecl(void) {
+    if(checkError==1)
+    printf("compileProcDecl\n");
+    
   Object* procObj;
 
   eat(KW_PROCEDURE);
@@ -212,6 +247,9 @@ void compileProcDecl(void) {
 
 //EXERCISE 4 -------------------------------------
 ConstantValue* compileUnsignedConstant(void) {
+    if(checkError==1)
+    printf("checkError\n");
+    
   ConstantValue* constValue;
   Object* obj;
 
@@ -249,6 +287,9 @@ ConstantValue* compileUnsignedConstant(void) {
 
 //EXERCISE 4 -------------------------------------
 ConstantValue* compileConstant(void) {
+    if(checkError==1)
+    printf("compileConstant\n");
+    
   ConstantValue* constValue;
 
   switch (lookAhead->tokenType) {
@@ -278,6 +319,9 @@ ConstantValue* compileConstant(void) {
 
 //EXERCISE 4 -------------------------------------
 ConstantValue* compileConstant2(void) {
+    if(checkError==1)
+    printf("compileConstant2\n");
+    
   ConstantValue* constValue;
   Object* obj;
 
@@ -310,6 +354,9 @@ ConstantValue* compileConstant2(void) {
 
 //EXERCISE 4 -------------------------------------
 Type* compileType(void) {
+    if(checkError==1)
+    printf("compileType\n");
+    
   Type* type;
   Type* elementType;
   int arraySize;
@@ -358,6 +405,9 @@ Type* compileType(void) {
 
 //EXERCISE 4 -------------------------------------
 Type* compileBasicType(void) {
+    if(checkError==1)
+    printf("compileBasicType\n");
+    
   Type* type;
 
   switch (lookAhead->tokenType) {
@@ -385,6 +435,9 @@ Type* compileBasicType(void) {
 }
 
 void compileParams(void) {
+    if(checkError==1)
+    printf("compileParams\n");
+    
   if (lookAhead->tokenType == SB_LPAR) {
     eat(SB_LPAR);
     compileParam();
@@ -397,6 +450,9 @@ void compileParams(void) {
 }
 
 void compileParam(void) {
+    if(checkError==1)
+    printf("compileParam\n");
+    
   Object* param;
   Type* type;
   enum ParamKind paramKind;
@@ -424,6 +480,9 @@ void compileParam(void) {
 }
 
 void compileStatements(void) {
+    if(checkError==1)
+    printf("compileStatements\n");
+    
   compileStatement();
   while (lookAhead->tokenType == SB_SEMICOLON) {
     eat(SB_SEMICOLON);
@@ -432,6 +491,9 @@ void compileStatements(void) {
 }
 
 void compileStatement(void) {
+    if(checkError==1)
+    printf("compileStatement\n");
+    
   switch (lookAhead->tokenType) {
   case TK_IDENT:
     compileAssignSt();
@@ -464,6 +526,9 @@ void compileStatement(void) {
 }
 
 Type* compileLValue(void) {
+    if(checkError==1)
+    printf("compileLValue\n");
+    
   // parse a lvalue (a variable, an array element, a parameter, the current function identifier)
   Object* var = NULL;
   Type* varType = NULL;
@@ -482,6 +547,9 @@ Type* compileLValue(void) {
 }
 
 void compileAssignSt(void) {
+    if(checkError==1)
+    printf("compileAssignSt\n");
+    
   // parse the assignment and check type consistency
   Type *lvalueType = NULL;
   Type *expType = NULL;
@@ -494,6 +562,9 @@ void compileAssignSt(void) {
 }
 
 void compileCallSt(void) {
+    if(checkError==1)
+    printf("compileCallSt\n");
+    
   Object* proc;
 
   eat(KW_CALL);
@@ -505,12 +576,18 @@ void compileCallSt(void) {
 }
 
 void compileGroupSt(void) {
+    if(checkError==1)
+    printf("compileGroupSt\n");
+    
   eat(KW_BEGIN);
   compileStatements();
   eat(KW_END);
 }
 
 void compileIfSt(void) {
+    if(checkError==1)
+    printf("compileIfSt\n");
+    
   eat(KW_IF);
   compileCondition();
   eat(KW_THEN);
@@ -520,11 +597,17 @@ void compileIfSt(void) {
 }
 
 void compileElseSt(void) {
+    if(checkError==1)
+    printf("compileElseSt\n");
+    
   eat(KW_ELSE);
   compileStatement();
 }
 
 void compileWhileSt(void) {
+    if(checkError==1)
+    printf("compileWhileSt\n");
+    
   eat(KW_WHILE);
   compileCondition();
   eat(KW_DO);
@@ -532,6 +615,9 @@ void compileWhileSt(void) {
 }
 
 void compileForSt(void) {
+    if(checkError==1)
+    printf("compileForSt\n");
+    
   // Check type consistency of FOR's variable
   eat(KW_FOR);
   eat(TK_IDENT);
@@ -557,9 +643,14 @@ void compileForSt(void) {
 }
 
 void compileArgument(Object* param) {
+    if(checkError==1)
+    printf("compileArgument\n");
+    
   // parse an argument, and check type consistency
   //       If the corresponding parameter is a reference, the argument must be a lvalue
-  if (param->paramAttrs->kind == PARAM_REFERENCE) {
+
+  if (param->paramAttrs->kind == PARAM_REFERENCE){
+
     if (lookAhead->tokenType == TK_IDENT) {
       checkDeclaredLValueIdent(lookAhead->string);
     } else {
@@ -573,7 +664,11 @@ void compileArgument(Object* param) {
 }
 
 void compileArguments(ObjectNode* paramList) {
+    if(checkError==1)
+    printf("compileArguments\n");
+    
   // parse a list of arguments, check the consistency of the arguments and the given parameters
+    
   switch (lookAhead->tokenType) {
   case SB_LPAR:
     eat(SB_LPAR);
@@ -615,9 +710,15 @@ void compileArguments(ObjectNode* paramList) {
   case KW_END:
   case KW_ELSE:
   case KW_THEN:
+
+
+
+
+    /*??????????????????????????????????????????::::::::::::::::::::::::::::::::::
     // Param list exists but we don't see left parenthesis
     if (paramList->object != NULL)
       error(ERR_PARAMETERS_ARGUMENTS_INCONSISTENCY, currentToken->lineNo, currentToken->colNo);
+      ??????????????????????????????????????????????????*/
     break;
   default:
     error(ERR_INVALID_ARGUMENTS, lookAhead->lineNo, lookAhead->colNo);
@@ -625,6 +726,9 @@ void compileArguments(ObjectNode* paramList) {
 }
 
 void compileCondition(void) {
+    if(checkError==1)
+    printf("compileCondition\n");
+    
   // check the type consistency of LHS and RSH, check the basic type
   Type *exp1 = compileExpression();
   checkBasicType(exp1);
@@ -661,6 +765,9 @@ void compileCondition(void) {
 
 //EXERCISE 4 -------------------------------------
 Type* compileExpression(void) {
+    if(checkError==1)
+    printf("compileExpression\n");
+    
   Type* type;
   
   switch (lookAhead->tokenType) {
@@ -684,6 +791,9 @@ Type* compileExpression(void) {
 
 //EXERCISE 4 -------------------------------------
 Type* compileExpression2(void) {
+    if(checkError==1)
+    printf("compileExpression2\n");
+    
   Type* type;
 
   type = compileTerm();
@@ -697,6 +807,9 @@ Type* compileExpression2(void) {
 
 //EXERCISE 4 -------------------------------------
 void compileExpression3(void) {
+    if(checkError==1)
+    printf("compileExpression3\n");
+    
   Type* type;
 
   switch (lookAhead->tokenType) {
@@ -736,6 +849,9 @@ void compileExpression3(void) {
 
 //EXERCISE 4 -------------------------------------
 void compileExpression4(void) {//phep cong 2 xau
+    if(checkError==1)
+    printf("compileExpression4\n");
+    
   Type* type;
 
   switch (lookAhead->tokenType) {
@@ -770,6 +886,9 @@ void compileExpression4(void) {//phep cong 2 xau
 
 //EXERCISE 4 -------------------------------------
 Type* compileTerm(void) {
+    if(checkError==1)
+    printf("compileTerm\n");
+    
   Type* type;
 
   type = compileFactor();
@@ -784,6 +903,9 @@ Type* compileTerm(void) {
 
 //EXERCISE 4 -------------------------------------
 void compileTerm2(void) {
+    if(checkError==1)
+    printf("compileTerm2\n");
+    
   Type* type;
 
   switch (lookAhead->tokenType) {
@@ -825,6 +947,9 @@ void compileTerm2(void) {
 
 //EXERCISE 4 -------------------------------------
 Type* compileFactor(void) {
+    if(checkError==1)
+    printf("compileFactor\n");
+    
   // parse a factor and return the factor's type
 
   Object* obj = NULL;
@@ -854,7 +979,7 @@ Type* compileFactor(void) {
     
     
   case TK_IDENT:
-    eat(TK_IDENT);
+    eat(TK_IDENT);  
     // check if the identifier is declared
     obj = checkDeclaredIdent(currentToken->string);
 
@@ -887,11 +1012,14 @@ Type* compileFactor(void) {
   default:
     error(ERR_INVALID_FACTOR, lookAhead->lineNo, lookAhead->colNo);
   }
-  
+
   return type;
 }
 
 Type* compileIndexes(Type* arrayType) {
+    if(checkError==1)
+    printf("compileIndexes\n");
+    
   // parse a sequence of indexes, check the consistency to the arrayType, and return the element type
   Type *idxType = NULL;
   Type *elmType = NULL;
@@ -919,6 +1047,9 @@ Type* compileIndexes(Type* arrayType) {
 }
 
 int compile(char *fileName) {
+    if(checkError==1)
+    printf("compile\n");
+    
   if (openInputStream(fileName) == IO_ERROR)
     return IO_ERROR;
 
