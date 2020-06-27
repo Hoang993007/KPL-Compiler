@@ -36,6 +36,12 @@ bao ngoài – SL
 *************************************************************
 Chương trình tìm số Fibonaci có 55 khối lệnh
 
+Mỗi frame đều có một B và T riêng.
+Với B nằm ở đáy dùng để truy xuất giá trị
+Và T nằm ở đỉnh dùng để cấp phát bộ nhớ
+	T không chỉ cấp phát bộ nhớ để lưu trữ cho biến cục bộ, biến khai báo mà cả các kết quả trung gian trong quá trình tính toán
+
+Khi một hàm con kết thúc, frame được cấp cho nó sẽ được Free
 *************************************************************
 
 compileProgram 
@@ -81,7 +87,9 @@ genINT
 
 ---------------
 emitINT 
-2: INT 4	//Sau khi dành ngăn xếp cho RV,DL,RA,SL trên đầu ngăn xếp. Tăng con trỏ stack lên 4 <-> lên đầu stack, nơi còn trống để chuẩn bị cho việc lưu trữ các biến cục bộ
+2: INT 4	//Khi hàm này được gọi, hàm sẽ được cấp một frame.
+		//Ban đầu top của frame = base của frame. Trong frame đã có 4 ngăn xếp được cấp cho RV(offset: 0),DL(offset: 1),RA(offset: 2),SL(offfset: 3). Ta phải tăng con trỏ T của frame lên 4, lên đầu frame để chuẩn bị cho việc lưu trữ các biến cục bộ && các giá trị tạm thời khác
+		//Ở đây lưu ý là Frame đang được sử dụng sẽ luôn nằm ở trên đỉnh của stack chính (lớn nhất)
 ---------------
 
 compileStatements 
@@ -126,11 +134,6 @@ genEP
 emitEP 
 6: EP		//Exit procedure INPUT
 ---------------
-		
-Chú ý: 
-* khi ngoài hàm gọi vào thì thật sự nó là T: con trỏ stack
-* nhưng khi vào hàm này rồi thì cái thực sự là B: con trỏ tương tự T nhưng ở trong frame hiện tại
-* Chương trình kết thúc, B tự được free
 
 
 compileFuncDecl
@@ -159,8 +162,9 @@ genINT
 
 ---------------
 emitINT 
-8: INT 5	//Ở frame hiện tại có RV(0),DL(1),RA(2),SL(3) và 1 đối sô -> có 5 stack, tăng B lên 5 đẻ đến ngăn xếp trốn đầu tiên, chuẩn bị cho việc lưu trữ biến cục bộ
-		//ý nghĩa ở đây là nếu có biến cục bộ sẽ lưu ngay sau những vùng nhớ trên. Những vùng nhớ trên đc tạo khi gọi hàm để phục vụ cho hàm, không đc ghi đè lên đó
+8: INT 5	//Khi hàm này được gọi, hàm sẽ được cấp một frame.
+		//Ban đầu top của frame = base của frame. Trong frame đã có 5 ngăn xếp được cấp cho RV(offset: 0),DL(offset: 1),RA(offset: 2),SL(offfset: 3) và 1 đối số n(offset: 4). Ta phải tăng con trỏ T của frame lên 5, lên đầu frame để chuẩn bị cho việc lưu trữ các biến cục bộ && các giá trị tạm thời khác
+		//Ở đây lưu ý là Frame đang được sử dụng sẽ luôn nằm ở trên đỉnh của stack chính (lớn nhất)
 ---------------
 
 compileStatements 
@@ -182,7 +186,7 @@ emitLV
 		//Là đối số -> nằm ở scope hiện tại => Level: 0
 		//Offset: 4
 		//s[t]:=s[base(p)+q];
-		//Tại frame của scope hiện tại, tính từ base - đỉnh stack trở xuống sẽ là RV, DL, RA, SL rồi sẽ đến ngay biến cục bộ đc khai báo là n => offset=4: Cộng lên 4 để lấy đc ô nhớ cần thiết
+		//Tại frame hiện tại, tính từ base - đáy frame đi lên sẽ là RV(offset: 0),DL(offset: 1),RA(offset: 2),SL(offfset: 3) rồi sẽ đến nơi lưu đối số truyền vào (offset: 4)
 ---------------
 
 compileTerm2 
@@ -224,11 +228,11 @@ genReturnValueAddress
 
 ---------------
 emitLA 
-13: LA 0,0	//Lấy ra return value:
-		//Là đối số -> nằm ở scope hiện tại => Level: 0
+13: LA 0,0	//Lấy ra vị trí ngăn RV, chuẩn bị gán giá trị vào:
+		//Là RV -> nằm ở scope hiện tại => Level: 0
 		//Offset: 0 => RV
 		//s[t]:=s[base(p)+q];
-		//Tại frame của scope hiện tại, tính từ base - đỉnh stack trở xuống sẽ là RV, DL, RA, SL => offset(RV)=0
+		//Tại frame của scope hiện tại, tính từ base - đáy Frame đi lên sẽ là RV(0), DL(1), RA(2), SL(3). RV nằm ở đáy frame.
 ---------------
 
 compileExpression 
@@ -269,7 +273,7 @@ emitLV
 		//Là đối số -> nằm ở scope hiện tại => Level: 0
 		//Offset: 4
 		//s[t]:=s[base(p)+q];
-		//Tại frame của scope hiện tại, tính từ base - đỉnh stack trở xuống sẽ là RV, DL, RA, SL rồi sẽ đến ngay biến cục bộ đc khai báo là n => offset=4: Cộng lên 4 để lấy đc ô nhớ cần thiết
+		//Tại frame hiện tại, tính từ base - đáy frame đi lên sẽ là RV(offset: 0),DL(offset: 1),RA(offset: 2),SL(offfset: 3) rồi sẽ đến nơi lưu đối số truyền vào (offset: 4)
 ---------------
 
 compileTerm2 
@@ -311,11 +315,11 @@ genReturnValueAddress
 
 ---------------
 emitLA 
-20: LA 0,0	//Lấy ra return value:
-		//Là đối số -> nằm ở scope hiện tại => Level: 0
+20: LA 0,0	//Lấy ra vị trí ngăn RV, chuẩn bị gán giá trị vào:
+		//Là RV -> nằm ở scope hiện tại => Level: 0
 		//Offset: 0 => RV
 		//s[t]:=s[base(p)+q];
-		//Tại frame của scope hiện tại, tính từ base - đỉnh stack trở xuống sẽ là RV, DL, RA, SL => offset(RV)=0
+		//Tại frame của scope hiện tại, tính từ base - đáy Frame đi lên sẽ là RV(0), DL(1), RA(2), SL(3). RV nằm ở đáy frame.
 ---------------
 
 compileExpression 
@@ -356,7 +360,7 @@ emitLV
 		//Là đối số -> nằm ở scope hiện tại => Level: 0
 		//Offset: 4
 		//s[t]:=s[base(p)+q];
-		//Tại frame của scope hiện tại, tính từ base - đỉnh stack trở xuống sẽ là RV, DL, RA, SL rồi sẽ đến ngay biến cục bộ đc khai báo là n => offset=4: Cộng lên 4 để lấy đc ô nhớ cần thiết
+		//Tại frame hiện tại, tính từ base - đáy frame đi lên sẽ là RV(offset: 0),DL(offset: 1),RA(offset: 2),SL(offfset: 3) rồi sẽ đến nơi lưu đối số truyền vào (offset: 4)
 ---------------
 
 compileTerm2 
@@ -398,11 +402,11 @@ genReturnValueAddress
 
 ---------------
 emitLA 
-27: LA 0,0	//Lấy ra return value:
-		//Là đối số -> nằm ở scope hiện tại => Level: 0
+27: LA 0,0	//Lấy ra vị trí ngăn RV, chuẩn bị gán giá trị vào:
+		//Là RV -> nằm ở scope hiện tại => Level: 0
 		//Offset: 0 => RV
 		//s[t]:=s[base(p)+q];
-		//Tại frame của scope hiện tại, tính từ base - đỉnh stack trở xuống sẽ là RV, DL, RA, SL => offset(RV)=0
+		//Tại frame của scope hiện tại, tính từ base - đáy Frame đi lên sẽ là RV(0), DL(1), RA(2), SL(3). RV nằm ở đáy frame.
 ---------------
 
 compileExpression 
@@ -412,9 +416,10 @@ compileFactor
 genINT 
 
 ---------------
-emitINT 
-28: INT 4	//Ở frame hiện tại có RV(0),DL(1),RA(2),SL(3) -> có 4 stack, tăng B lên 4 đẻ đến ngăn xếp trốn đầu tiên, chuẩn bị cho việc lưu trữ tham số truyền vào hàm
-		//ý nghĩa ở đây là nếu có biến cục bộ sẽ lưu ngay sau những vùng nhớ trên. Những vùng nhớ trên đc tạo khi gọi hàm để phục vụ cho hàm, không đc ghi đè lên đó
+emitINT 	
+28: INT 4	//Chỗ này là bắt đầu việc gọi hàm Fibonaci
+		//Sau khi cấp phát 4 ngăn nhớ cho RV, DL, RA ,SL, tạo ra 1 frame mới cho hàm con sắp được gọi, còn cần truyền vào nó đối số. Tăng T của frame hiện tại lên 4 đẻ đến ngăn xếp trống trên đầu của frame mới tạo, chuẩn bị cho việc lưu trữ tham số truyền vào hàm
+		//Ở đây lưu ý là Frame đang được sử dụng sẽ luôn nằm ở trên đỉnh của stack chính
 ---------------
 
 compileArguments 
@@ -431,7 +436,7 @@ emitLV
 		//Là đối số -> nằm ở scope hiện tại => Level: 0
 		//Offset: 4
 		//s[t]:=s[base(p)+q];
-		//Tại frame của scope hiện tại, tính từ base - đỉnh stack trở xuống sẽ là RV, DL, RA, SL rồi sẽ đến ngay biến cục bộ đc khai báo là n => offset=4: Cộng lên 4 để lấy đc ô nhớ cần thiết
+		//Tại frame hiện tại, tính từ base - đáy frame đi lên sẽ là RV(offset: 0),DL(offset: 1),RA(offset: 2),SL(offfset: 3) rồi sẽ đến nơi lưu đối số truyền vào (offset: 4)
 ---------------
 
 compileTerm2 
@@ -451,7 +456,7 @@ genSB
 ---------------
 emitSB 
 31: SB		//Subtract 
-		#Tính (n-1) trước rồi mới thực hiện lệnh gọi hàm
+		#Tính (n-1) trước rồi mới thực hiện lệnh gọi hàm Fibonaci
 ---------------
 
 compileExpression3 
@@ -459,19 +464,30 @@ genDCT
 
 ---------------
 emitDCT 
-32: DCT 5	//Đưa B trở lại vị trí sẵn sàng. Sau khi frame kết thúc, B lại trở lại là con trỏ đầu của Frame hiện tại
-		//Từ đây chương trình con Fibonaci con bên trong chương trình anyf sẽ được truy cập bằng một con trỏ frame B' khác, không phải B nữa
+32: DCT 5	//Đưa T trở lại vị trí sẵn sàng. Tý nữa sau khi frame tạo ra cho việc gọi làm Fibonaci ở trên kết thúc, frame con kia được free. Lúc này T của frame này sẽ lại là đang trỏ đến vị trí trên cùng của frame
+		//Từ đây frame con được cung cấp cho chương trình Fibonaci con được gọi ở bên trong chương trình Fibonaci này sẽ được truy cập bằng một con trỏ frame B' và T' khác, không phải B và T của frame này nữa
 ---------------
 
 genFunctionCall 
 
 ---------------
 emitCALL 
-33: CALL 1,7	//Gọi chương trình con
+33: CALL 1,7	//Gọi chương trình con trong chương trình con
+		
+		//s[t+2]:=b; s[t+3]:=pc; s[t+4]:=base(p);b:=t+1; pc:=q;
+		//t ở đây là top của frame hiện tại
+		
+		
+		//s[t+2]:=b; //DL (dynamic link): Sử dụng để hồi phục ngữ cảnh của chương trình gọi (caller) khi chương trình được gọi (callee) kết thúc. Giá trị sẽ bằng base cũ.
+		//s[t+3]:=pc; //RA (return address): Sử dụng để tìm tới lệnh tiếp theo của caller khi callee kết thúc
+		//s[t+4]:=base(p); //SL (static link): Sử dụng để truy nhập các biến phi cục bộ, hay các biến bên ngoài scope hiện tại
+		//b:=t+1; //base mới dùng trong chương trình con đc gọi trỏ đến vị trí t+1, cũng chính là nơi sẽ lưu giá trị trả về từ chương trình con (RV (return value))	
+
+		
 		//Level: 1
-			//Fibonaci:=Fibonaci(n-1) + Fibonaci(n-2);
-			//Fibonaci(n-1) && Fibonaci(n-2): Chuyển sang scope level1
-		//Địa chỉ của Label (Nhãn hàm): 7 (Tương ứng với nhãn Fibonaci: )
+			//Tại vị trí này chương trình đã đi vào trong hàm, scope hiện tại là scope của hàm, level 0. Chiếu theo đó, scope của chương trình hiện tại (đã trở thành cha) sẽ là level 1. Chỗ này là phục vụ cho s[t+4]:=base(p) với p là scope cha - level 1	
+ 
+		//Gán cho thanh ghi PC Địa chỉ của Label (Nhãn hàm): 7 (Tương ứng với nhãn Fibonaci: )
 ---------------
 
 compileTerm2 
@@ -482,8 +498,9 @@ genINT
 
 ---------------
 emitINT 
-34: INT 4	//Ở frame hiện tại có RV(0),DL(1),RA(2),SL(3) -> có 4 stack, tăng B lên 4 đẻ đến ngăn xếp trốn đầu tiên, chuẩn bị cho việc lưu trữ tham số truyền vào hàm
-		//ý nghĩa ở đây là nếu có biến cục bộ sẽ lưu ngay sau những vùng nhớ trên. Những vùng nhớ trên đc tạo khi gọi hàm để phục vụ cho hàm, không đc ghi đè lên đó
+34: INT 4	//Chỗ này là bắt đầu việc gọi hàm Fibonaci
+		//Sau khi cấp phát 4 ngăn nhớ cho RV, DL, RA ,SL, tạo ra 1 frame mới cho hàm con sắp được gọi, còn cần truyền vào nó đối số. Tăng T của frame hiện tại lên 4 đẻ đến ngăn xếp trống trên đầu của frame mới tạo, chuẩn bị cho việc lưu trữ tham số truyền vào hàm
+		//Ở đây lưu ý là Frame đang được sử dụng sẽ luôn nằm ở trên đỉnh của stack chính
 ---------------
 
 compileArguments 
@@ -500,7 +517,7 @@ emitLV
 		//Là đối số -> nằm ở scope hiện tại => Level: 0
 		//Offset: 4
 		//s[t]:=s[base(p)+q];
-		//Tại frame của scope hiện tại, tính từ base - đỉnh stack trở xuống sẽ là RV, DL, RA, SL rồi sẽ đến ngay biến cục bộ đc khai báo là n => offset=4: Cộng lên 4 để lấy đc ô nhớ cần thiết
+		//Tại frame hiện tại, tính từ base - đáy frame đi lên sẽ là RV(offset: 0),DL(offset: 1),RA(offset: 2),SL(offfset: 3) rồi sẽ đến nơi lưu đối số truyền vào (offset: 4)
 ---------------
 
 compileTerm2 
@@ -528,19 +545,30 @@ genDCT
 
 ---------------
 emitDCT 
-38: DCT 5	//Đưa B trở lại vị trí sẵn sàng. Sau khi frame kết thúc, B lại trở lại là con trỏ đầu của Frame hiện tại
-		//Từ đây chương trình con Fibonaci con bên trong chương trình anyf sẽ được truy cập bằng một con trỏ frame B' khác, không phải B nữa
+38: DCT 5	//Đưa T trở lại vị trí sẵn sàng. Tý nữa sau khi frame tạo ra cho việc gọi làm Fibonaci ở trên kết thúc, frame con kia được free. Lúc này T của frame này sẽ lại là đang trỏ đến vị trí trên cùng của frame
+		//Từ đây frame con được cung cấp cho chương trình Fibonaci con được gọi ở bên trong chương trình Fibonaci này sẽ được truy cập bằng một con trỏ frame B' và T' khác, không phải B và T của frame này nữa
 ---------------
 
 genFunctionCall 
 
 ---------------
 emitCALL 
-39: CALL 1,7	//Gọi chương trình con
+39: CALL 1,7	//Gọi chương trình con trong chương trình con
+		
+		//s[t+2]:=b; s[t+3]:=pc; s[t+4]:=base(p);b:=t+1; pc:=q;
+		//t ở đây là top của frame hiện tại
+		
+		
+		//s[t+2]:=b; //DL (dynamic link): Sử dụng để hồi phục ngữ cảnh của chương trình gọi (caller) khi chương trình được gọi (callee) kết thúc. Giá trị sẽ bằng base cũ.
+		//s[t+3]:=pc; //RA (return address): Sử dụng để tìm tới lệnh tiếp theo của caller khi callee kết thúc
+		//s[t+4]:=base(p); //SL (static link): Sử dụng để truy nhập các biến phi cục bộ, hay các biến bên ngoài scope hiện tại
+		//b:=t+1; //base mới dùng trong chương trình con đc gọi trỏ đến vị trí t+1, cũng chính là nơi sẽ lưu giá trị trả về từ chương trình con (RV (return value))	
+
+		
 		//Level: 1
-			//Fibonaci:=Fibonaci(n-1) + Fibonaci(n-2);
-			//Fibonaci(n-1) && Fibonaci(n-2): Chuyển sang scope level1
-		//Địa chỉ của Label (Nhãn hàm): 7 (Tương ứng với nhãn Fibonaci: )
+			//Tại vị trí này chương trình đã đi vào trong hàm, scope hiện tại là scope của hàm, level 0. Chiếu theo đó, scope của chương trình hiện tại (đã trở thành cha) sẽ là level 1. Chỗ này là phục vụ cho s[t+4]:=base(p) với p là scope cha - level 1	
+ 
+		//Gán cho thanh ghi PC Địa chỉ của Label (Nhãn hàm): 7 (Tương ứng với nhãn Fibonaci: )
 ---------------
 
 compileTerm2 
@@ -573,8 +601,7 @@ genINT
 
 ---------------
 emitINT 
-43: INT 6	//Ở frame hiện tại (ở đây chính là Frame ngoài cùng nhất, hay là toàn bộ stack) có RV(0),DL(1),RA(2),SL(3) và 2 biến n và num -> có 6 stack, tăng T (ở đây là ngoài cùng nên sẽ là T) lên 6 đẻ đến ngăn xếp trốn đầu tiên, chuẩn bị cho việc lưu trữ biến cục bộ
-		//ý nghĩa ở đây là nếu có biến cục bộ sẽ lưu ngay sau những vùng nhớ trên. Những vùng nhớ trên đc tạo khi gọi hàm để phục vụ cho hàm, không đc ghi đè lên đó
+43: INT 6	//Ở frame hiện tại (ở đây chính là Frame ngoài cùng nhất, hay là toàn bộ stack) có RV(offset: 0),DL(offset: 1),RA(offset: 2),SL(offfset: 3) và 2 biến n(offset: 4) và num(offset: 5) -> có 6 ngăn xếp đã dùng để lưu, tăng T (ở đây là ngoài cùng nên sẽ là T) lên 6 đẻ đến ngăn xếp trốn đầu tiên, chuẩn bị cho việc lưu trữ biến cục bộ && các kết quả trung gian khác
 ---------------
 
 compileStatements 
@@ -584,8 +611,8 @@ genINT
 
 ---------------
 emitINT 
-44: INT 4	//Sau khi khi tạo ra RV,DL,RA,SL và cho nó các vùng nhớ -> có 4 stack, tăng T lên 4 đẻ đến ngăn xếp trốn đầu tiên, chuẩn bị cho việc lưu trữ tham số truyền vào hàm
-		//ý nghĩa ở đây là nếu có biến cục bộ sẽ lưu ngay sau những vùng nhớ trên. Những vùng nhớ trên đc tạo khi gọi hàm để phục vụ cho hàm, không đc ghi đè lên đó
+44: INT 4	//Chỗ này là bắt đầu việc gọi hàm INPUT
+		//Sau khi cấp phát 4 ngăn nhớ cho RV, DL, RA ,SL, tạo ra 1 frame mới cho hàm con sắp được gọi, còn cần truyền vào nó đối số. Tăng T của stack lên 4 đẻ đến ngăn xếp trống trên đầu của frame mới cấp, chuẩn bị cho việc lưu trữ tham số truyền vào hàma
 ---------------
 
 compileArguments 
@@ -593,8 +620,8 @@ genDCT
 
 ---------------
 emitDCT 
-45: DCT 4	//Đưa T trở lại vị trí sẵn sàng. Sau khi frame kết thúc, T lại trở lại là con trỏ đầu của stack
-		//Từ đây frame trong hàm sẽ được truy cập từ B (con trỏ frame của hàm0 chứ ko phải từ T
+45: DCT 4	//Đưa T trở lại vị trí sẵn sàng. Tý nữa sau khi frame tạo ra cho việc gọi làm INPUT ở trên kết thúc, frame con kia được free. Lúc này T của stack sẽ lại là đang trỏ đến vị trí trên cùng của stack
+		//Từ đây frame con được cung cấp cho chương trình Input con được gọi ở bên trong chương trình Fibonaci này sẽ được truy cập bằng một con trỏ frame B' và T' khác, không phải B và T của stack này nữa
 ---------------
 
 genProcedureCall 
@@ -613,9 +640,9 @@ genVariableAddress
 
 ---------------
 emitLA 
-47: LA 0,5	//Load address (address of num variable)
+47: LA 0,5	//Lấy ra địa chỉ của biến:
 		//là scope hiện tại - global scope=> level: 0
-		//Offset: 5 (n có offset là 4, ngay sau là num nên num có offset là 5)
+		//Offset: 5 (n có offset là 4, ngay sau là num với offset là 5)
 ---------------
 
 compileExpression 
@@ -626,10 +653,8 @@ genINT
 
 ---------------
 emitINT 
-48: INT 4	// Sau lưu trữ RV,DL,RA,SL xong xuôi (cung cấp cho chúng các ngăn nhớ) -> Tăng T lên 4 để đến với đỉnh stack lúc này - những ngăn nhớ còn trống ngay sau RV,DL,RA,SL để chuẩn bị lưu trữ đối số (nếu có) cho hàm
-		//Tý nữa ta sẽ đưa T lại vị trí sẵn sàng để sau khi hàm kết thúc, con trỏ frame b của hàm đc giải phóng thì T lại trở thành con trỏ trỏ đến đầu stack
-		//Từ đây ta sẽ truy nhập vào frame của hàm bằng con trỏ frame B chứ ko phải là T nữa hay Sau khi gọi hàm thì con trỏ trong stack mà ta dùng sẽ không phải là T (con trỏ tổng) mà là B(con trỏ frame) hiện tại. nếu chương trình con lồng nhau thì lại là một B' trỏ đến 1 frame nhỏ hơn của frame mà B sở hữu.
-
+48: INT 4	//Chỗ này là bắt đầu việc gọi hàm Fibonaci
+		//Sau khi cấp phát 4 ngăn nhớ cho RV, DL, RA ,SL, tạo ra 1 frame mới cho hàm con sắp được gọi, còn cần truyền vào nó đối số. Tăng T của stack lên 4 đẻ đến ngăn xếp trống trên đầu của frame mới cấp, chuẩn bị cho việc lưu trữ tham số truyền vào hàm
 ---------------
 
 compileArguments 
@@ -642,7 +667,7 @@ genVariableValue
 
 ---------------
 emitLV 
-49: LV 0,4	//Load address (address of num variable)
+49: LV 0,4	//Load address (address of n variable)
 		//là scope hiện tại - global scope=> level: 0
 		//Offset: 4 (Ngay sau RV,DL,RA,SL)
 ---------------
@@ -653,9 +678,8 @@ genDCT
 
 ---------------
 emitDCT 
-50: DCT 5	////Đưa T trở lại vị trí sẵn sàng. Sau khi frame kết thúc, T lại trở lại là con trỏ đầu của stack
-		//Từ đây frame trong hàm sẽ được truy cập từ B (con trỏ frame của hàm0 chứ ko phải từ T
-		//Đã sinh mã cho tham số, giờ thì đã sẵn sàng để gọi hàm
+50: DCT 5	//Đưa T trở lại vị trí sẵn sàng. Tý nữa sau khi frame tạo ra cho việc gọi làm INPUT ở trên kết thúc, frame con kia được free. Lúc này T của stack sẽ lại là đang trỏ đến vị trí trên cùng của stack
+		//Từ đây frame con được cung cấp cho chương trình Input con được gọi ở bên trong chương trình Fibonaci này sẽ được truy cập bằng một con trỏ frame B' và T' khác, không phải B và T của stack này nữa
 ---------------
 
 genFunctionCall 

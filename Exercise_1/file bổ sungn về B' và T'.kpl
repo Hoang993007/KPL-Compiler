@@ -1,0 +1,15 @@
+Về B' và T'
+Thực ra trong toàn bộ chương trình, ở phần code chỉ tồn tại duy nhất 1 biến lưu B và 1 biến lưu T
+
+Khi trong 1 hàm gọi hàm khác:
+	* Base của frame của hàm gọi sẽ được lưu lại
+	* Biến B lúc này sẽ được gán bằng Base của frame cấp phát cho hàm được gọi tới
+	* Lúc này coi như B đã trở thành B' (Chỉ là về mặt hình dung, còn thực tế vẫn chỉ có 1 biến B, không có biến B' nào đc tạo)
+	* Khi chương trình con kết thúc, B sẽ được trả về giá trị là B cũ (đã được lưu trữ ở trên)
+
+Khi trong 1 hàm gọi hàm khác:
+	* Vẫn luôn chỉ sử dụng T của stack, không cần phải lưu lại mà cứ thế thao tác. (Khác với B phải được lưu lại giá trị cũ trước khi chuyển sang frame mới, với giá trị của B là Base mới, T không được lưu lại mà cứ thế chạy trong suốt chương trình)
+	* T sau khi cấp các ngăn nhớ cho chương trình con, tạo ra frame mới, sẽ được trừ về để chỉ vào đúng ô Base của frame đó. Sau đó khi vào chương trình con, về mặt hình dung, là một T'. Lúc đó ta sẽ phải tăng T lên để trỏ vào đầu của frame, sẵn sàng cho lưu các biến tạm thời.
+	* Khi chương trình kết thúc, T sẽ được trả lại giá trị bằng B của frame của chương trình con, sau khi frame của ct con được free thì T là đỉnh của stack.
+
+(Ở T có sự nhầm lẫn trong bài gửi trước. Sorry! Có lẽ vẫn còn lỗi :(()
