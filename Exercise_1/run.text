@@ -1,0 +1,7 @@
+cd completed/
+make
+./kplc ../example2.kpl run.exe -dump
+cd ..
+cd interpreter/interpreter/
+make
+./kplrun ../../completed/run.exe
