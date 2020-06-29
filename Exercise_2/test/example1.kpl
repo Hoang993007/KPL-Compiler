@@ -2,5 +2,5 @@ program example1;
 var x: integer;
     n: integer;
 begin
-    x:= n**(2+4);
+    x:= n*2**(2+4);
 end.

@@ -21,9 +21,9 @@ typedef enum {
   KW_BEGIN, KW_END, KW_CALL,
   KW_IF, KW_THEN, KW_ELSE,
   KW_WHILE, KW_DO, KW_FOR, KW_TO,
-//EXERCISE 3-------------------------------------------
+  //EXERCISE 3--------------------------------------------------------------------------
   KW_SWITCH, KW_CASE, KW_DEFAULT, KW_BREAK,
-//------------------------------------------------------	
+  //-----------------------------------------------------------------------------------------------
 
   SB_SEMICOLON, SB_COLON, SB_PERIOD, SB_COMMA,
   SB_ASSIGN, SB_EQ, SB_NEQ, SB_LT, SB_LE, SB_GT, SB_GE,

@@ -94,12 +94,12 @@ char *tokenToString(TokenType tokenType) {
   case KW_FOR: return "keyword FOR";
   case KW_TO: return "keyword TO";
   
-  //EXERCISE 3-------------------------------------------
+  //EXERCISE 3----------------------------------------------------------------------
   case KW_SWITCH: return "keyword SWITCH";
   case KW_CASE: return "keyword CASE";
   case KW_DEFAULT: return "keyword DEFAULT";
   case KW_BREAK: return "keyword BREAK";
-//------------------------------------------------------
+//-----------------------------------------------------------------------------------------
 
   case SB_SEMICOLON: return "\';\'";
   case SB_COLON: return "\':\'";

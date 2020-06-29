@@ -17,6 +17,7 @@ enum TypeClass {
   TP_STRING,
   TP_ARRAY
 };
+//------------------------------------------
 
 enum ObjectKind {
   OBJ_CONSTANT,
@@ -42,7 +43,7 @@ struct Type_ {
 typedef struct Type_ Type;
 typedef struct Type_ BasicType;
 
-//EXERCISE 4 ---------------------------
+//EXERCISE 4 -----------------------------------------------------
 struct ConstantValue_ {
   enum TypeClass type;
   union {
@@ -52,6 +53,7 @@ struct ConstantValue_ {
     char stringValue[MAX_IDENT_LEN + 1];
   };
 };
+//------------------------------------------------------------------------
 
 typedef struct ConstantValue_ ConstantValue;
 

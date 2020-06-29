@@ -283,12 +283,12 @@ void printToken(Token *token) {
   case KW_FOR: printf("KW_FOR\n"); break;
   case KW_TO: printf("KW_TO\n"); break;
   
-//EXERCISE 3-------------------------------------------
+//EXERCISE 3------------------------------------------------------------------------------------------------
   case KW_SWITCH: printf("KW_SWITCH\n"); break;
   case KW_CASE: printf("KW_CASE\n"); break;
   case KW_DEFAULT: printf("KW_DEFAULT\n"); break;
   case KW_BREAK: printf("KW_BREAK\n"); break;
-//------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------
 
   case SB_SEMICOLON: printf("SB_SEMICOLON\n"); break;
   case SB_COLON: printf("SB_COLON\n"); break;

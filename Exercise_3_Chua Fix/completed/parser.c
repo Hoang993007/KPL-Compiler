@@ -370,6 +370,7 @@ void compileStatements2(void) {
   }
 }
 
+//Exercise 3 ------------------------------------------------------
 void compileStatement(void) {
   switch (lookAhead->tokenType) {
   case TK_IDENT:
@@ -390,6 +391,22 @@ void compileStatement(void) {
   case KW_FOR:
     compileForSt();
     break;
+    
+    //Exercise 3 ------------------------------------------------------
+  case KW_SWITCH:
+    compileSwitchSt();
+    break;
+  case KW_CASE:
+    compileCaseSt();
+    break;
+  case KW_DEFAULT:
+    compileDefaultSt();
+    break;
+  case KW_BREAK:
+    compileBreakSt();
+    break;
+    //----------------------------------------------------------------------------
+
     // EmptySt needs to check FOLLOW tokens
   case SB_SEMICOLON:
   case KW_END:
@@ -487,6 +504,33 @@ void compileForSt(void) {
   compileStatement();
   assert("For statement parsed ....");
 }
+
+//Exercise 3 --------------------------------------------------------------
+void compileSwitchSt(void) {
+  eat(KW_SWITCH);
+  compileExpression();
+  eat(KW_BEGIN);
+  compileCaseSt();
+  eat(KW_END);
+}
+
+void compileCaseSt(void) {
+  eat(KW_CASE);
+  compileConstant();
+  eat(SB_COLON);
+  compileStatements();
+}
+
+void compileDefaultSt(void) {
+  eat(KW_DEFAULT);
+  eat(SB_COLON);
+  compileStatement();
+}
+
+void compileBreakSt(void) {
+  eat(KW_BREAK);
+}
+//---------------------------------------------------------------------------------
 
 void compileArguments(void) {
   switch(lookAhead->tokenType){
@@ -620,6 +664,13 @@ void compileExpression3(void) {
   case KW_ELSE:
   case KW_TO:
   case KW_DO:
+    //EXERCISE 3 ----------------------------------------------------------------
+    //Voi switch case se den begin.
+    //VD: switch a
+    //        begin
+    //=> phai them ky hieu ket thuc vao fllow cuar expresstion
+  case KW_BEGIN:
+    //----------------------------------------------------------------------------------
   case SB_COMMA:
   case SB_EQ:
   case SB_NEQ:
@@ -638,28 +689,26 @@ void compileExpression3(void) {
   }
 }
 
-//exercise 1 ---------------------------------------------------------------------------
 void compileTerm(void) {
-  //exercise 1 ------------------
-  compileTermMu();
-  //-------------------------------
+  compileFactor();
   compileTerm2();
 }
 
 void compileTerm2(void) {
   switch(lookAhead->tokenType){
+  case SB_MU:
+    eat(SB_MU);
+    compileFactor();
+    compileTerm2();
+    break;
   case SB_TIMES:
     eat(SB_TIMES);
-    //exercise 1 ------------------
-    compileTermMu();
-    //-------------------------------
+    compileFactor();
     compileTerm2();
     break;
   case SB_SLASH:
     eat(SB_SLASH);
-    //exercise 1 -------------
-    compileTermMu();
-    //-------------------------------
+    compileFactor();
     compileTerm2();
     break;
     //check FOLLOW to reach empty
@@ -670,6 +719,9 @@ void compileTerm2(void) {
   case KW_ELSE:
   case KW_TO:
   case KW_DO:
+    //EXERCISE 3 ----------------------------------------------------------------------------------
+  case KW_BEGIN:
+    //----------------------------------------------------------------------------------------------------
   case SB_COMMA:
   case SB_EQ:
   case SB_NEQ:
@@ -686,50 +738,6 @@ void compileTerm2(void) {
     break;
   }
 }
-
-//exercise 1 ------------------------------------------------
-void compileTermMu(void) {
-  compileFactor();
-  compileTermMu2();
-}
-
-void compileTermMu2(void) {
-  switch(lookAhead->tokenType){
-  case SB_MU:
-    eat(SB_MU);
-    compileFactor();
-    compileTermMu2();
-    break;
- 
-    //check FOLLOW to reach empty
-  case SB_PLUS:
-  case SB_MINUS:
-    //exercise 1 -----------------------------------------
-  case SB_TIMES:
-  case SB_SLASH:
-    //------------------------------------------------------
-  case SB_SEMICOLON:
-  case KW_END:
-  case KW_ELSE:
-  case KW_TO:
-  case KW_DO:
-  case SB_COMMA:
-  case SB_EQ:
-  case SB_NEQ:
-  case SB_LE:
-  case SB_LT:
-  case SB_GE:
-  case SB_GT:
-  case SB_RPAR:
-  case SB_RSEL:
-  case KW_THEN:
-    break;
-  default:
-    error(ERR_INVALIDTERM, lookAhead->lineNo, lookAhead->colNo);
-    break;
-  }
-}
-//----------------------------------------------------------------------------------------------------------------------------
 
 void compileFactor(void) {
   switch(lookAhead->tokenType){

@@ -149,7 +149,7 @@ void checkArrayType(Type* type) {
 //EXERCISE 4 ---------------------------------------------------------------------------------------
 void checkTypeEquality(Type* type1, Type* type2) {
   if (type1->typeClass != type2->typeClass) {
-  	if(type1->typeClass == TP_DOUBLE && type2->typeClass == TP_INT);//ep kieu
+    if(type1->typeClass == TP_DOUBLE && type2->typeClass == TP_INT);//ep kieu
     else error(ERR_TYPE_INCONSISTENCY, currentToken->lineNo, currentToken->colNo);
   } else if (type1->typeClass == TP_ARRAY) {
     checkTypeEquality(type1->elementType, type2->elementType);

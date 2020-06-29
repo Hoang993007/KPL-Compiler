@@ -21,6 +21,7 @@ Type* intType;
 Type* doubleType;
 Type* charType;
 Type* stringType;
+//------------------------------------------------------------------
 
 /******************* Type utilities ******************************/
 
@@ -391,5 +392,3 @@ void declareObject(Object* obj) {
  
   addObject(&(symtab->currentScope->objList), obj);
 }
-
-
