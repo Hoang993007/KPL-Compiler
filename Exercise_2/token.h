@@ -25,7 +25,9 @@ typedef enum {
   SB_PLUS, SB_MINUS, SB_TIMES, SB_SLASH,
   SB_LPAR, SB_RPAR, SB_LSEL, SB_RSEL, 
   
-  SB_MU//exercise 1
+  //exercise 1--------------------------------------
+  SB_MU
+  //------------------------------------------------
   
 } TokenType; 
 

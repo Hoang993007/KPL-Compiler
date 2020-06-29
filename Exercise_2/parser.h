@@ -52,6 +52,8 @@ void compileExpression2(void);
 void compileExpression3(void);
 void compileTerm(void);
 void compileTerm2(void);
+void compileTermMu(void);
+void compileTermMu2(void);
 void compileFactor(void);
 void compileIndexes(void);
 

@@ -106,7 +106,11 @@ char *tokenToString(TokenType tokenType) {
   case SB_RPAR: return "\')\'";
   case SB_LSEL: return "\'(.\'";
   case SB_RSEL: return "\'.)\'";
-    case SB_MU: return "^";
+
+    //exercise 1 ----------------------------------------------------------------------
+  case SB_MU: return "\'**\'";
+    //----------------------------------------------------------------------------------------
+
   default: return "";
   }
 }

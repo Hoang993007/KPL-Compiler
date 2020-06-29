@@ -11,7 +11,7 @@ BEGIN
     BEGIN
       CALL  HANOI(N-1,S,6-S-Z);
 
-      I:=2**(I+2);  (* TEST EXERCISE 1 *)
+      I:=2**(I**2);  (* TEST EXERCISE 1 *)
 I:=(I+I);
       CALL  WRITELN;
       CALL  WRITEI(I);  
